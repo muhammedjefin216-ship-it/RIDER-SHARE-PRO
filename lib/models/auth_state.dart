@@ -6,13 +6,11 @@ class AuthState {
   final bool isGoogleSigningIn;
   final bool isCheckingSession;
 
-  // Forgot password flow
   final bool isSendingForgotOtp;
   final bool isVerifyingForgotOtp;
   final bool isResettingPassword;
   final bool forgotOtpVerified;
 
-  // Current logged-in user (from GET /auth/me)
   final bool isLoadingUser;
   final String? userId;
   final String? userName;

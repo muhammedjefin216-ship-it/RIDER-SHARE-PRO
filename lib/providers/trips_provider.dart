@@ -53,17 +53,6 @@ class TripsNotifier extends Notifier<TripsState> {
     return const TripsState();
   }
 
-  // ============================================================
-  // GET MY TRIPS (hosted + booked, combined)
-  //
-  // Response shape (confirmed from tripController.js):
-  // { success: true, data: { hosted: [...], guest: [...], all: [...] } }
-  // ============================================================
-
-  // ============================================================
-  // CREATE TRIP (Host a Ride)
-  // ============================================================
-
   Future<Map<String, dynamic>> createTrip({
     required String from,
     required String to,
@@ -100,7 +89,6 @@ class TripsNotifier extends Notifier<TripsState> {
 
       state = state.copyWith(isPosting: false, clearError: true);
 
-      // Refresh the trips list so the new trip shows up right away.
       await fetchMyTrips();
 
       return {

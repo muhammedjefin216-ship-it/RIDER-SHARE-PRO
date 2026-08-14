@@ -1,13 +1,9 @@
 import 'package:dio/dio.dart';
-import 'api_constants.dart';
+import '../core/constants/api_constants.dart';
 import 'dio_client.dart';
 
 class TripsService {
   Future<Dio> get _dio async => await DioClient.getInstance();
-
-  // ============================================================
-  // CREATE TRIP (Host a Ride)
-  // ============================================================
 
   Future<Response> createTrip({
     required String from,
@@ -55,9 +51,37 @@ class TripsService {
     }
   }
 
-  // ============================================================
-  // GET MY TRIPS (hosted by current user)
-  // ============================================================
+  Future<Response> searchTrips({
+    required String from,
+    required String to,
+    String? date,
+    int passengers = 1,
+    bool? womenOnly,
+    num? maxPrice,
+  }) async {
+    try {
+      final dio = await _dio;
+
+      final response = await dio.get(
+        ApiConstants.searchTrips,
+        queryParameters: {
+          'from': from,
+          'to': to,
+          if (date != null) 'date': date,
+          'passengers': passengers,
+          if (womenOnly != null) 'womenOnly': womenOnly.toString(),
+          if (maxPrice != null) 'maxPrice': maxPrice,
+        },
+      );
+
+      return response;
+    } on DioException catch (e) {
+      print('SEARCH TRIPS ERROR');
+      print('STATUS: ${e.response?.statusCode}');
+      print('DATA: ${e.response?.data}');
+      rethrow;
+    }
+  }
 
   Future<Response> getMyTrips() async {
     try {

@@ -1,13 +1,9 @@
 import 'package:dio/dio.dart';
-import 'api_constants.dart';
+import '../core/constants/api_constants.dart';
 import 'dio_client.dart';
 
 class AuthService {
   Future<Dio> get _dio async => await DioClient.getInstance();
-
-  // ============================================================
-  // REGISTER
-  // ============================================================
 
   Future<Response> register({
     required String name,
@@ -39,10 +35,6 @@ class AuthService {
     }
   }
 
-  // ============================================================
-  // VERIFY EMAIL
-  // ============================================================
-
   Future<Response> verifyEmail({
     required String email,
     required String otp,
@@ -52,10 +44,7 @@ class AuthService {
 
       final response = await dio.post(
         ApiConstants.verifyEmail,
-        data: {
-          'email': email,
-          'otp': otp,
-        },
+        data: {'email': email, 'otp': otp},
       );
 
       return response;
@@ -67,21 +56,13 @@ class AuthService {
     }
   }
 
-  // ============================================================
-  // RESEND OTP
-  // ============================================================
-
-  Future<Response> resendOtp({
-    required String email,
-  }) async {
+  Future<Response> resendOtp({required String email}) async {
     try {
       final dio = await _dio;
 
       final response = await dio.post(
         ApiConstants.resendOtp,
-        data: {
-          'email': email,
-        },
+        data: {'email': email},
       );
 
       return response;
@@ -93,10 +74,6 @@ class AuthService {
     }
   }
 
-  // ============================================================
-  // LOGIN
-  // ============================================================
-
   Future<Response> login({
     required String email,
     required String password,
@@ -106,10 +83,7 @@ class AuthService {
 
       final response = await dio.post(
         ApiConstants.login,
-        data: {
-          'email': email,
-          'password': password,
-        },
+        data: {'email': email, 'password': password},
       );
 
       return response;
@@ -120,10 +94,6 @@ class AuthService {
       rethrow;
     }
   }
-
-  // ============================================================
-  // GOOGLE AUTH
-  // ============================================================
 
   Future<Response> googleAuth({required String idToken}) async {
     try {
@@ -143,10 +113,6 @@ class AuthService {
     }
   }
 
-  // ============================================================
-  // REFRESH TOKEN
-  // ============================================================
-
   Future<Response> refreshToken() async {
     try {
       final dio = await _dio;
@@ -162,10 +128,6 @@ class AuthService {
     }
   }
 
-  // ============================================================
-  // GET CURRENT USER
-  // ============================================================
-
   Future<Response> getCurrentUser() async {
     try {
       final dio = await _dio;
@@ -180,10 +142,6 @@ class AuthService {
       rethrow;
     }
   }
-
-  // ============================================================
-  // FORGOT PASSWORD — send OTP
-  // ============================================================
 
   Future<Response> forgotPassword({required String email}) async {
     try {
@@ -202,10 +160,6 @@ class AuthService {
       rethrow;
     }
   }
-
-  // ============================================================
-  // FORGOT PASSWORD — verify OTP
-  // ============================================================
 
   Future<Response> verifyForgotOtp({
     required String email,
@@ -227,10 +181,6 @@ class AuthService {
       rethrow;
     }
   }
-
-  // ============================================================
-  // FORGOT PASSWORD — reset
-  // ============================================================
 
   Future<Response> resetPassword({
     required String email,

@@ -9,6 +9,8 @@ class ApiConstants {
 
   static const String refreshToken = '$baseUrl/auth/refresh-token';
 
+  static const String searchTrips = '$baseUrl/trips/search';
+
   static const String myTrips = '$baseUrl/trips/my-trips/all';
 
   static const String createTrip = '$baseUrl/trips';

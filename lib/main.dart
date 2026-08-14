@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'screens/login_screen.dart';
+import 'package:ridesharepro/view/auth/login_screen.dart';
+import 'package:ridesharepro/view/home/home_screen.dart';
+import 'providers/auth_provider.dart';
+
+
+// This is the starting point (1)
 
 void main() {
   runApp(ProviderScope(child: MyApp()));
@@ -11,11 +16,49 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: const LoginScreen(),
-    );
+    return MaterialApp(debugShowCheckedModeBanner: false, home: SessionGate());
   }
 }
 
+class SessionGate extends ConsumerStatefulWidget {
+  const SessionGate({super.key});
 
+  @override
+  ConsumerState<SessionGate> createState() => _SessionGateState();
+}
+
+class _SessionGateState extends ConsumerState<SessionGate> {
+  bool _checked = false;
+  bool _hasSession = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _check());
+  }
+
+  Future<void> _check() async {
+    final hasSession = await ref.read(authProvider.notifier).checkSession();
+
+    if (!mounted) return;
+
+    setState(() {
+      _hasSession = hasSession;
+      _checked = true;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (!_checked) {
+      return Scaffold(
+        backgroundColor: Color(0xffF7F8FC),
+        body: Center(
+          child: CircularProgressIndicator(color: Color(0xff16A34A)),
+        ),
+      );
+    }
+
+    return _hasSession ? HomeScreen() : LoginScreen();
+  }
+}

@@ -1,17 +1,3 @@
-// ============================================================
-// Trip model — matches the exact shape returned by
-// GET /api/trips/my-trips/all (tripController.js -> getMyTrips)
-//
-// Each item in data.all (combining hosted + guest trips) looks
-// like:
-// {
-//   id, tripId, route, role ("HOST" | "GUEST"),
-//   date, time, status ("UPCOMING" | "ONGOING" | "COMPLETED" | "CANCELLED"),
-//   seats: { booked, total },
-//   amount (already formatted as a string, e.g. "₹500")
-// }
-// ============================================================
-
 class TripSeats {
   final int booked;
   final int total;
@@ -30,11 +16,11 @@ class Trip {
   final String id;
   final String tripId;
   final String route;
-  final String role; // "HOST" or "GUEST"
+  final String role;
   final String date;
   final String time;
-  final String status; // "UPCOMING" | "ONGOING" | "COMPLETED" | "CANCELLED"
-  final String amount; // already formatted, e.g. "₹500"
+  final String status;
+  final String amount;
   final TripSeats seats;
 
   Trip({

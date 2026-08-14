@@ -18,10 +18,6 @@ class AuthNotifier extends Notifier<AuthState> {
     return const AuthState();
   }
 
-  // ============================================================
-  // REGISTER
-  // ============================================================
-
   Future<bool> register({
     required String name,
     required String phone,
@@ -58,7 +54,8 @@ class AuthNotifier extends Notifier<AuthState> {
         }
       }
 
-      final alreadyExists = e.response?.statusCode == 400 &&
+      final alreadyExists =
+          e.response?.statusCode == 400 &&
           message.toLowerCase().contains('already exists');
 
       state = state.copyWith(
@@ -75,14 +72,7 @@ class AuthNotifier extends Notifier<AuthState> {
     }
   }
 
-  // ============================================================
-  // VERIFY EMAIL OTP
-  // ============================================================
-
-  Future<bool> verifyEmail({
-    required String email,
-    required String otp,
-  }) async {
+  Future<bool> verifyEmail({required String email, required String otp}) async {
     state = state.copyWith(isVerifying: true, clearError: true);
 
     try {
@@ -114,10 +104,6 @@ class AuthNotifier extends Notifier<AuthState> {
       return false;
     }
   }
-
-  // ============================================================
-  // RESEND OTP
-  // ============================================================
 
   Future<bool> resendOtp({required String email}) async {
     state = state.copyWith(isResending: true, clearError: true);
@@ -152,10 +138,6 @@ class AuthNotifier extends Notifier<AuthState> {
     }
   }
 
-  // ============================================================
-  // LOGIN
-  // ============================================================
-
   Future<Map<String, dynamic>> login({
     required String email,
     required String password,
@@ -164,7 +146,10 @@ class AuthNotifier extends Notifier<AuthState> {
     state = state.copyWith(isLoggingIn: true, clearError: true);
 
     try {
-      final response = await _authService.login(email: email, password: password);
+      final response = await _authService.login(
+        email: email,
+        password: password,
+      );
 
       final data = response.data;
       final token = data['accessToken'] as String?;
@@ -206,10 +191,6 @@ class AuthNotifier extends Notifier<AuthState> {
     }
   }
 
-  // ============================================================
-  // GOOGLE AUTH
-  // ============================================================
-
   Future<Map<String, dynamic>> googleAuth({required String idToken}) async {
     state = state.copyWith(isGoogleSigningIn: true, clearError: true);
 
@@ -221,8 +202,7 @@ class AuthNotifier extends Notifier<AuthState> {
       if (token != null) {
         await _storage.write(key: 'accessToken', value: token);
       }
-      // Google sign-in always behaves like "remember me" since there's
-      // no explicit checkbox for it in that flow.
+
       await _storage.write(key: 'rememberMe', value: 'true');
 
       state = state.copyWith(isGoogleSigningIn: false, clearError: true);
@@ -236,14 +216,13 @@ class AuthNotifier extends Notifier<AuthState> {
       state = state.copyWith(isGoogleSigningIn: false, errorMessage: message);
       return {'success': false, 'message': message};
     } catch (e) {
-      state = state.copyWith(isGoogleSigningIn: false, errorMessage: e.toString());
+      state = state.copyWith(
+        isGoogleSigningIn: false,
+        errorMessage: e.toString(),
+      );
       return {'success': false, 'message': e.toString()};
     }
   }
-
-  // ============================================================
-  // REFRESH TOKEN
-  // ============================================================
 
   Future<bool> refreshAccessToken() async {
     try {
@@ -263,14 +242,6 @@ class AuthNotifier extends Notifier<AuthState> {
       return false;
     }
   }
-
-  // ============================================================
-  // SESSION CHECK (used at app launch)
-  //
-  // Only attempts auto-login if the user previously checked
-  // "Remember me" (or signed in with Google, which always sets
-  // this flag). Otherwise, always sends the user to LoginScreen.
-  // ============================================================
 
   Future<bool> checkSession() async {
     state = state.copyWith(isCheckingSession: true);
@@ -293,18 +264,10 @@ class AuthNotifier extends Notifier<AuthState> {
     }
   }
 
-  // ============================================================
-  // LOGOUT (local — clears stored session data)
-  // ============================================================
-
   Future<void> logout() async {
     await _storage.delete(key: 'accessToken');
     await _storage.write(key: 'rememberMe', value: 'false');
   }
-
-  // ============================================================
-  // GET CURRENT USER
-  // ============================================================
 
   Future<bool> fetchCurrentUser() async {
     state = state.copyWith(isLoadingUser: true);
@@ -337,10 +300,6 @@ class AuthNotifier extends Notifier<AuthState> {
     }
   }
 
-  // ============================================================
-  // FORGOT PASSWORD — send OTP
-  // ============================================================
-
   Future<Map<String, dynamic>> forgotPassword({required String email}) async {
     state = state.copyWith(isSendingForgotOtp: true, clearError: true);
 
@@ -360,14 +319,13 @@ class AuthNotifier extends Notifier<AuthState> {
       state = state.copyWith(isSendingForgotOtp: false, errorMessage: message);
       return {'success': false, 'message': message};
     } catch (e) {
-      state = state.copyWith(isSendingForgotOtp: false, errorMessage: e.toString());
+      state = state.copyWith(
+        isSendingForgotOtp: false,
+        errorMessage: e.toString(),
+      );
       return {'success': false, 'message': e.toString()};
     }
   }
-
-  // ============================================================
-  // FORGOT PASSWORD — verify OTP
-  // ============================================================
 
   Future<Map<String, dynamic>> verifyForgotOtp({
     required String email,
@@ -376,7 +334,10 @@ class AuthNotifier extends Notifier<AuthState> {
     state = state.copyWith(isVerifyingForgotOtp: true, clearError: true);
 
     try {
-      final response = await _authService.verifyForgotOtp(email: email, otp: otp);
+      final response = await _authService.verifyForgotOtp(
+        email: email,
+        otp: otp,
+      );
 
       state = state.copyWith(
         isVerifyingForgotOtp: false,
@@ -392,17 +353,19 @@ class AuthNotifier extends Notifier<AuthState> {
       if (e.response?.data is Map && e.response!.data['message'] != null) {
         message = e.response!.data['message'].toString();
       }
-      state = state.copyWith(isVerifyingForgotOtp: false, errorMessage: message);
+      state = state.copyWith(
+        isVerifyingForgotOtp: false,
+        errorMessage: message,
+      );
       return {'success': false, 'message': message};
     } catch (e) {
-      state = state.copyWith(isVerifyingForgotOtp: false, errorMessage: e.toString());
+      state = state.copyWith(
+        isVerifyingForgotOtp: false,
+        errorMessage: e.toString(),
+      );
       return {'success': false, 'message': e.toString()};
     }
   }
-
-  // ============================================================
-  // FORGOT PASSWORD — reset
-  // ============================================================
 
   Future<Map<String, dynamic>> resetPassword({
     required String email,
@@ -433,7 +396,10 @@ class AuthNotifier extends Notifier<AuthState> {
       state = state.copyWith(isResettingPassword: false, errorMessage: message);
       return {'success': false, 'message': message};
     } catch (e) {
-      state = state.copyWith(isResettingPassword: false, errorMessage: e.toString());
+      state = state.copyWith(
+        isResettingPassword: false,
+        errorMessage: e.toString(),
+      );
       return {'success': false, 'message': e.toString()};
     }
   }
