@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
-/// Small colored chip with icon + label — used for trust badges like
-/// "Secured by Stripe Escrow" / "Free Cancellation until 24h".
+
 class TrustBadgeChip extends StatelessWidget {
   final IconData icon;
   final String label;

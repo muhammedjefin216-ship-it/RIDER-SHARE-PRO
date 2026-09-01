@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 
-/// -/value/+ stepper row used for seat count (and reusable anywhere
-/// else a bounded integer stepper is needed).
+
 class StepperCounter extends StatelessWidget {
   final int value;
   final VoidCallback? onDecrement;

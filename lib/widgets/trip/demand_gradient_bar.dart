@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 
-/// Decorative green-to-red demand gradient bar with labels and a
-/// circular position indicator. Purely visual — there's no live
-/// demand data from the backend yet, so [positionFraction] (0.0-1.0)
-/// is just a placeholder position until that data exists.
+
 class DemandGradientBar extends StatelessWidget {
   final String lowLabel;
   final String highLabel;

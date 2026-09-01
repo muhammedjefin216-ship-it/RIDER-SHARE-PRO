@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 
-/// Horizontal row of selectable category chips (All Trips / Hosting /
-/// Travelling / Past). Purely presentational — caller owns the
-/// selected index + onSelected.
+
 class CategoryChipBar extends StatelessWidget {
   final List<String> categories;
   final int selectedIndex;

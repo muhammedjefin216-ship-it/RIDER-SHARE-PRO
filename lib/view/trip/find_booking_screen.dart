@@ -11,10 +11,7 @@ import '../../widgets/trip/ride_result_card.dart';
 import '../../widgets/trip/no_rides_found_banner.dart';
 import '../../widgets/trip/ride_alert_card.dart';
 
-// NOTE: original import pointed at 'trip_booking%20screen.dart' (a
-// filename containing a literal space) — assumed to be a typo and
-// corrected to 'trip_booking_screen.dart' here. Update this path if
-// your actual booking screen file lives elsewhere.
+
 
 class FindRideBookingScreen extends ConsumerStatefulWidget {
   final String initialFrom;
@@ -45,9 +42,6 @@ class _FindRideBookingScreenState extends ConsumerState<FindRideBookingScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) => _runSearch());
   }
 
-  // ==========================================================
-  // SEARCH (LOGIC UNTOUCHED)
-  // ==========================================================
   void _runSearch() {
     ref.read(rideSearchProvider.notifier).search(
           from: from,
@@ -58,9 +52,6 @@ class _FindRideBookingScreenState extends ConsumerState<FindRideBookingScreen> {
         );
   }
 
-  // ==========================================================
-  // EDIT SEARCH SHEET (LOGIC UNTOUCHED)
-  // ==========================================================
   Future<void> _openEditSheet() async {
     final fromController = TextEditingController(text: from);
     final toController = TextEditingController(text: to);
@@ -275,7 +266,7 @@ class _FindRideBookingScreenState extends ConsumerState<FindRideBookingScreen> {
                                             context,
                                             MaterialPageRoute(
                                               builder: (context) =>
-                                                  SeatBookingScreen(ride: ride),
+                                                  BookingScreen(ride: ride),
                                             ),
                                           );
                                         },

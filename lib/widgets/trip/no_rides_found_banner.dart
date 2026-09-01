@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 
-/// Shown when [searchState.results] is empty — search-off icon,
-/// title, subtitle. Same content/condition as the original
-/// NoRidesFoundBanner, just restyled to match the theme.
+
 class NoRidesFoundBanner extends StatelessWidget {
   const NoRidesFoundBanner({super.key});
 

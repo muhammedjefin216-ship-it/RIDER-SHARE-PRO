@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 
-/// Small bordered field showing a date/time value with a leading
-/// icon — tapping it opens the picker (handled by the screen via
-/// [onTap]). Purely presentational; the screen owns the picked value.
+
 class DateTimePickerField extends StatelessWidget {
   final IconData icon;
   final String label;

@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 import '../buttons/primary_button.dart';
 
-/// Empty-state card shown when there are no upcoming trips —
-/// icon in a white circle, title, subtitle, and a "Find a ride →" CTA.
+
 class EmptyTripsCard extends StatelessWidget {
   final VoidCallback onFindRide;
 

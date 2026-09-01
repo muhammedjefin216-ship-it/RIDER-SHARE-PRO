@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 
-/// Navy rounded-bottom card summarizing the active search — "SEARCHING
-/// FOR" label, route line, an edit (pencil) button, and a row of pill
-/// chips underneath (date, passenger count, etc. — pass any via [pills]).
+
 class SearchSummaryBanner extends StatelessWidget {
   final String from;
   final String to;

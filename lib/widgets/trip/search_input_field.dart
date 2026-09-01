@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 
-/// Light lavender search field — leading search icon, no label,
-/// no border. Used for "Search route or segment..." on My Trips.
+
 class SearchInputField extends StatelessWidget {
   final String hint;
   final TextEditingController? controller;

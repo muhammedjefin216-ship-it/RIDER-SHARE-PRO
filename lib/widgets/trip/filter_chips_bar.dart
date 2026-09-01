@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 
-/// Horizontal scrolling row of filter chips (Filters / Morning /
-/// Verified / Price: Low). Client-side only for now — no backend
-/// filter API — matches the original FilterChipsBar's intent, just
-/// restyled and with the "Morning" chip added to match Figma.
+
 class FilterChipsBar extends StatelessWidget {
   const FilterChipsBar({super.key});
 

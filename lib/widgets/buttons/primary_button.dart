@@ -49,10 +49,18 @@ class PrimaryButton extends StatelessWidget {
               )
             : Row(
                 mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(label, style: AppTextStyles.buttonLabel),
+                  Flexible(
+                    child: Text(
+                      label,
+                      style: AppTextStyles.buttonLabel,
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
+                    ),
+                  ),
                   if (trailingIcon != null) ...[
-                    const SizedBox(width: 8),
+                    const SizedBox(width: 6),
                     Icon(trailingIcon, size: 18, color: AppColors.white),
                   ],
                 ],

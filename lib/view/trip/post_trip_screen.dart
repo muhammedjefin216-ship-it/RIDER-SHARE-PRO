@@ -45,9 +45,7 @@ class _PostTripScreenState extends ConsumerState<PostTripScreen> {
     super.dispose();
   }
 
-  // ==========================================================
-  // DATE / TIME PICKERS (LOGIC UNTOUCHED)
-  // ==========================================================
+
   Future<void> pickDate() async {
     final picked = await showDatePicker(
       context: context,
@@ -66,9 +64,7 @@ class _PostTripScreenState extends ConsumerState<PostTripScreen> {
     if (picked != null) setState(() => selectedTime = picked);
   }
 
-  // ==========================================================
-  // POST TRIP (LOGIC UNTOUCHED)
-  // ==========================================================
+
   Future<void> postTrip() async {
     final from = fromController.text.trim();
     final to = toController.text.trim();
@@ -91,11 +87,6 @@ class _PostTripScreenState extends ConsumerState<PostTripScreen> {
     final result = await ref.read(tripsProvider.notifier).createTrip(
           from: from,
           to: to,
-          // Placeholder coordinates — location search/autocomplete
-          // isn't built yet (needs a map/geocoding integration).
-          // Using a tiny non-zero value instead of 0.0, since the
-          // backend's validation treats 0 as "not provided"
-          // (falsy check in JS) and rejects the request otherwise.
           fromLat: 0.0001,
           fromLon: 0.0001,
           toLat: 0.0001,
@@ -119,9 +110,7 @@ class _PostTripScreenState extends ConsumerState<PostTripScreen> {
     }
   }
 
-  // ==========================================================
-  // MESSAGE (LOGIC UNTOUCHED)
-  // ==========================================================
+
   void showMessage(String message, {bool isError = true}) {
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()
@@ -175,7 +164,7 @@ class _PostTripScreenState extends ConsumerState<PostTripScreen> {
 
                     const SizedBox(height: 16),
 
-                    // ROUTE DETAILS
+                 
                     SectionCard(
                       icon: Icons.route_outlined,
                       title: 'Route Details',
@@ -245,7 +234,7 @@ class _PostTripScreenState extends ConsumerState<PostTripScreen> {
 
                     const SizedBox(height: 14),
 
-                    // SEATS & PRICING
+                   
                     SectionCard(
                       icon: Icons.event_seat_outlined,
                       title: 'Seats & Pricing',
@@ -303,7 +292,7 @@ class _PostTripScreenState extends ConsumerState<PostTripScreen> {
 
                     const SizedBox(height: 14),
 
-                    // ANALYSIS & PREFERENCES
+                   
                     SectionCard(
                       icon: Icons.analytics_outlined,
                       title: 'Analysis & Preferences',
@@ -382,7 +371,7 @@ class _PostTripScreenState extends ConsumerState<PostTripScreen> {
 
                     const SizedBox(height: 14),
 
-                    // VEHICLE DETAILS
+             
                     SectionCard(
                       icon: Icons.directions_car_outlined,
                       title: 'Vehicle Details',
@@ -413,7 +402,6 @@ class _PostTripScreenState extends ConsumerState<PostTripScreen> {
 
                     const SizedBox(height: 14),
 
-                    // PRO TIPS
                     ProTipsCard(
                       tips: const [
                         'Setting a competitive price increases your chance of booking by 40%',
@@ -432,7 +420,7 @@ class _PostTripScreenState extends ConsumerState<PostTripScreen> {
                       onPressed: postTrip,
                     ),
 
-                    const SizedBox(height: 16),
+                     SizedBox(height: 16),
                   ],
                 ),
               ),

@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 
-/// The "Community Trust" social-proof card shown on the Sign In screen —
-/// rating + active commuter count on top, avatar stack + verified
-/// badge on the bottom. Reusable if the same trust card shows up
-/// elsewhere (e.g. onboarding, marketing screens).
+
 class TrustBadgeCard extends StatelessWidget {
   final String ratingLabel;
   final String ratingValue;
@@ -148,7 +145,7 @@ class TrustBadgeCard extends StatelessWidget {
   }
 }
 
-/// Overlapping small circular avatars with a "+N" trailing badge.
+
 class _AvatarStack extends StatelessWidget {
   final String extraCountLabel;
 

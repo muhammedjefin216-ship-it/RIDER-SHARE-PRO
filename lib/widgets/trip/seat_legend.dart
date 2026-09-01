@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 
-/// Legend row for the seat map — Booked / Available / Selected swatches.
 class SeatLegend extends StatelessWidget {
   const SeatLegend({super.key});
 

@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 import 'two_tone_title.dart';
 
-/// White header used on inner pages like Post Trip — back arrow +
-/// two-tone title on the left, notification bell + avatar circle on
-/// the right (same trailing pattern as [DashboardTopBar]).
+
 class PageHeaderBar extends StatelessWidget {
   final String accentWord;
   final String restOfTitle;

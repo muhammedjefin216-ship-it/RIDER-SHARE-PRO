@@ -1,43 +1,146 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
+
+import '../../providers/trips_provider.dart';
+import '../../providers/payment_provider.dart';
 import '../../core/theme/app_colors.dart';
 import '../../widgets/common/back_title_bar.dart';
 import '../../widgets/trip/step_indicator_bar.dart';
 import '../../widgets/trip/inline_notice.dart';
 
-class PaymentScreen extends StatefulWidget {
+class PaymentScreen extends ConsumerStatefulWidget {
   final int selectedSeatsCount;
   final double seatPrice;
+  final String? tripId;
+  final int? fromOrder;
+  final int? toOrder;
+  final List<int> selectedSeatNumbers;
 
   const PaymentScreen({
     Key? key,
     this.selectedSeatsCount = 1,
     this.seatPrice = 100.0,
+    this.tripId,
+    this.fromOrder,
+    this.toOrder,
+    this.selectedSeatNumbers = const [],
   }) : super(key: key);
 
   @override
-  State<PaymentScreen> createState() => _PaymentScreenState();
+  ConsumerState<PaymentScreen> createState() => _PaymentScreenState();
 }
 
-class _PaymentScreenState extends State<PaymentScreen> {
-
-  final TextEditingController _cardNumberController = TextEditingController();
-  final TextEditingController _expiryController = TextEditingController();
-  final TextEditingController _cvcController = TextEditingController();
-  final TextEditingController _countryController = TextEditingController(text: 'India');
-
+class _PaymentScreenState extends ConsumerState<PaymentScreen> {
   bool _saveInfo = false;
 
   double get seatTotal => widget.selectedSeatsCount * widget.seatPrice;
   double get platformFee => seatTotal * 0.05; 
   double get totalAmount => seatTotal + platformFee;
 
-  @override
-  void dispose() {
-    _cardNumberController.dispose();
-    _expiryController.dispose();
-    _cvcController.dispose();
-    _countryController.dispose();
-    super.dispose();
+  void _showMessage(String message, {bool isError = true}) {
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(
+          content: Text(message),
+          backgroundColor: isError ? AppColors.error : AppColors.successGreen,
+        ),
+      );
+  }
+
+  Future<String?> _createStripePaymentIntent() async {
+    if (widget.tripId == null ||
+        widget.fromOrder == null ||
+        widget.toOrder == null) {
+      return null;
+    }
+
+    final intentData = await ref
+        .read(paymentProvider.notifier)
+        .createPaymentIntent(
+          tripId: widget.tripId!,
+          fromOrder: widget.fromOrder!,
+          toOrder: widget.toOrder!,
+          seatNumbers: widget.selectedSeatNumbers,
+        );
+
+    if (intentData == null) {
+      final error = ref.read(paymentProvider).errorMessage;
+      _showMessage(error ?? 'Unable to set up payment');
+      return null;
+    }
+
+    final clientSecret = intentData['clientSecret'] as String?;
+    if (clientSecret == null) {
+      _showMessage('Payment setup response was missing a clientSecret.');
+      return null;
+    }
+
+    return _confirmPaymentWithStripe(clientSecret);
+  }
+
+  Future<String?> _confirmPaymentWithStripe(String clientSecret) async {
+    try {
+      await Stripe.instance.initPaymentSheet(
+        paymentSheetParameters: SetupPaymentSheetParameters(
+          paymentIntentClientSecret: clientSecret,
+          merchantDisplayName: 'RideSharePro',
+        ),
+      );
+
+      await Stripe.instance.presentPaymentSheet();
+
+      return clientSecret.split('_secret_').first;
+    } on StripeException catch (e) {
+      if (e.error.code == FailureCode.Canceled) {
+        _showMessage('Payment cancelled');
+      } else {
+        _showMessage(e.error.localizedMessage ?? 'Payment failed');
+      }
+      return null;
+    } catch (e) {
+      _showMessage('Payment failed: $e');
+      return null;
+    }
+  }
+
+  Future<void> _payAndBook() async {
+    if (widget.tripId == null ||
+        widget.fromOrder == null ||
+        widget.toOrder == null) {
+      _showMessage('Missing trip/segment info — cannot book.');
+      return;
+    }
+    if (widget.selectedSeatNumbers.isEmpty) {
+      _showMessage('No seats selected.');
+      return;
+    }
+
+    final paymentIntentId = await _createStripePaymentIntent();
+    if (paymentIntentId == null)
+      return; 
+
+    final result = await ref
+        .read(tripsProvider.notifier)
+        .bookTrip(
+          tripId: widget.tripId!,
+          fromOrder: widget.fromOrder!,
+          toOrder: widget.toOrder!,
+          seatNumbers: widget.selectedSeatNumbers,
+          paymentIntentId: paymentIntentId,
+        );
+
+    if (!mounted) return;
+
+    if (result['success'] == true) {
+      _showMessage(result['message'] ?? 'Booking confirmed!', isError: false);
+      Navigator.popUntil(context, (route) => route.isFirst);
+    } else {
+      final unavailable = result['unavailableSeats'];
+      final suffix = unavailable != null ? ' (seats: $unavailable)' : '';
+      _showMessage('${result['message'] ?? 'Unable to book this trip'}$suffix');
+    }
   }
 
   @override
@@ -46,28 +149,28 @@ class _PaymentScreenState extends State<PaymentScreen> {
       backgroundColor: AppColors.pageBackground,
       body: SafeArea(
         child: SingleChildScrollView(
-          padding:  EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-               BackTitleBar(accentWord: 'Pay', restOfTitle: ' securely'),
-               SizedBox(height: 8),
-               StepIndicatorBar(
+              const BackTitleBar(accentWord: 'Pay', restOfTitle: ' securely'),
+              const SizedBox(height: 8),
+              const StepIndicatorBar(
                 steps: [StepItem('Review'), StepItem('Payment')],
                 currentIndex: 1,
               ),
-               SizedBox(height: 16),
+              const SizedBox(height: 16),
               _buildBannerCard(),
-               SizedBox(height: 16),
+              const SizedBox(height: 16),
               _buildLinkPayCard(),
-               SizedBox(height: 20),
+              const SizedBox(height: 20),
               _buildPaymentMethodSection(),
-               SizedBox(height: 16),
+              const SizedBox(height: 16),
               _buildSaveInfoCard(),
-               SizedBox(height: 20),
+              const SizedBox(height: 20),
               _buildPriceDetailsCard(),
-               SizedBox(height: 16),
-               InlineNotice(
+              const SizedBox(height: 16),
+              const InlineNotice(
                 icon: Icons.info_outline,
                 title: 'Cancellation Policy',
                 message:
@@ -77,7 +180,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                 iconColor: AppColors.primaryNavy,
                 textColor: AppColors.textPrimary,
               ),
-               SizedBox(height: 24),
+              const SizedBox(height: 24),
             ],
           ),
         ),
@@ -91,16 +194,16 @@ class _PaymentScreenState extends State<PaymentScreen> {
     return Container(
       width: double.infinity,
       height: 100,
-      padding:  EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
-        gradient:  LinearGradient(
+        gradient: const LinearGradient(
           colors: [AppColors.primaryNavy, AppColors.heroNavy],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
       ),
-      child:  Column(
+      child: const Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
@@ -120,7 +223,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
 
   Widget _buildLinkPayCard() {
     return Container(
-      padding:  EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: AppColors.lightInputBg,
         borderRadius: BorderRadius.circular(16),
@@ -134,15 +237,19 @@ class _PaymentScreenState extends State<PaymentScreen> {
               Row(
                 children: [
                   Container(
-                    padding:  EdgeInsets.all(4),
+                    padding: const EdgeInsets.all(4),
                     decoration: BoxDecoration(
                       color: AppColors.primaryNavy,
                       borderRadius: BorderRadius.circular(6),
                     ),
-                    child:  Icon(Icons.flash_on, color: AppColors.white, size: 16),
+                    child: const Icon(
+                      Icons.flash_on,
+                      color: AppColors.white,
+                      size: 16,
+                    ),
                   ),
-                   SizedBox(width: 8),
-                   Text(
+                  const SizedBox(width: 8),
+                  const Text(
                     'Link',
                     style: TextStyle(
                       fontSize: 18,
@@ -152,7 +259,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   ),
                 ],
               ),
-               Text(
+              const Text(
                 '1-CLICK',
                 style: TextStyle(
                   fontSize: 11,
@@ -162,25 +269,31 @@ class _PaymentScreenState extends State<PaymentScreen> {
               ),
             ],
           ),
-           SizedBox(height: 8),
-           Text(
+          const SizedBox(height: 8),
+          const Text(
             'Pay 3× faster with your saved details.',
             style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
           ),
-           SizedBox(height: 12),
+          const SizedBox(height: 12),
           SizedBox(
             width: double.infinity,
             height: 44,
             child: ElevatedButton(
               onPressed: () {},
               style: ElevatedButton.styleFrom(
-                backgroundColor:  Color(0xFF101828),
+                backgroundColor: const Color(0xFF101828),
                 elevation: 0,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
               ),
-              child:  Text(
+              child: const Text(
                 'Pay with Link',
-                style: TextStyle(color: AppColors.white, fontWeight: FontWeight.bold, fontSize: 14),
+                style: TextStyle(
+                  color: AppColors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14,
+                ),
               ),
             ),
           ),
@@ -193,142 +306,44 @@ class _PaymentScreenState extends State<PaymentScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-         Text(
+        const Text(
           'Payment Method',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: AppColors.textPrimary,
+          ),
         ),
-         SizedBox(height: 12),
+        const SizedBox(height: 12),
         Container(
-          padding:  EdgeInsets.all(16),
+          width: double.infinity,
+          padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
             color: AppColors.infoBannerBg,
             borderRadius: BorderRadius.circular(16),
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          child: Row(
             children: [
-              
-               Text('Card number',
-                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.textSecondary)),
-               SizedBox(height: 6),
               Container(
-                height: 48,
-                padding:  EdgeInsets.symmetric(horizontal: 12),
+                padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
                   color: AppColors.white,
                   borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: AppColors.border),
                 ),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        controller: _cardNumberController,
-                        keyboardType: TextInputType.number,
-                        decoration:  InputDecoration(
-                          hintText: '1234 5678 9101 1121',
-                          hintStyle: TextStyle(color: AppColors.hintText, fontSize: 13),
-                          border: InputBorder.none,
-                        ),
-                      ),
-                    ),
-                     Icon(Icons.credit_card, color: AppColors.textSecondary, size: 20),
-                  ],
+                child: const Icon(
+                  Icons.credit_card,
+                  color: AppColors.primaryNavy,
+                  size: 22,
                 ),
               ),
-               SizedBox(height: 12),
-
-             
-              Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                         Text('Expiry',
-                            style: TextStyle(
-                                fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.textSecondary)),
-                         SizedBox(height: 6),
-                        Container(
-                          height: 48,
-                          padding:  EdgeInsets.symmetric(horizontal: 12),
-                          decoration: BoxDecoration(
-                            color: AppColors.white,
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(color: AppColors.border),
-                          ),
-                          child: TextField(
-                            controller: _expiryController,
-                            keyboardType: TextInputType.datetime,
-                            decoration:  InputDecoration(
-                              hintText: 'MM / YY',
-                              hintStyle: TextStyle(color: AppColors.hintText, fontSize: 13),
-                              border: InputBorder.none,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                   SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                         Text('CVC',
-                            style: TextStyle(
-                                fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.textSecondary)),
-                         SizedBox(height: 6),
-                        Container(
-                          height: 48,
-                          padding:  EdgeInsets.symmetric(horizontal: 12),
-                          decoration: BoxDecoration(
-                            color: AppColors.white,
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(color: AppColors.border),
-                          ),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: TextField(
-                                  controller: _cvcController,
-                                  keyboardType: TextInputType.number,
-                                  obscureText: true,
-                                  decoration:  InputDecoration(
-                                    hintText: '123',
-                                    hintStyle: TextStyle(color: AppColors.hintText, fontSize: 13),
-                                    border: InputBorder.none,
-                                  ),
-                                ),
-                              ),
-                               Icon(Icons.help_outline, color: AppColors.textSecondary, size: 18),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-               SizedBox(height: 12),
-
-             
-               Text('Country',
-                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.textSecondary)),
-               SizedBox(height: 6),
-              Container(
-                height: 48,
-                padding:  EdgeInsets.symmetric(horizontal: 12),
-                decoration: BoxDecoration(
-                  color: AppColors.white,
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: AppColors.border),
-                ),
-                child: TextField(
-                  controller: _countryController,
-                  decoration:  InputDecoration(
-                    border: InputBorder.none,
-                    contentPadding: EdgeInsets.symmetric(vertical: 12),
+              const SizedBox(width: 12),
+              const Expanded(
+                child: Text(
+                  "You'll enter your card details securely in the next step, powered by Stripe.",
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: AppColors.textPrimary,
+                    height: 1.4,
                   ),
                 ),
               ),
@@ -338,9 +353,10 @@ class _PaymentScreenState extends State<PaymentScreen> {
       ],
     );
   }
+
   Widget _buildSaveInfoCard() {
     return Container(
-      padding:  EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
         color: AppColors.infoBannerBg,
         borderRadius: BorderRadius.circular(12),
@@ -348,12 +364,16 @@ class _PaymentScreenState extends State<PaymentScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-           Column(
+          const Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 'Save my information',
-                style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textPrimary,
+                ),
               ),
               SizedBox(height: 2),
               Text(
@@ -376,10 +396,9 @@ class _PaymentScreenState extends State<PaymentScreen> {
     );
   }
 
-
   Widget _buildPriceDetailsCard() {
     return Container(
-      padding:  EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: AppColors.infoBannerBg,
         borderRadius: BorderRadius.circular(16),
@@ -387,46 +406,72 @@ class _PaymentScreenState extends State<PaymentScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-           Text(
+          const Text(
             'Price Details',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: AppColors.textPrimary,
+            ),
           ),
-           SizedBox(height: 12),
+          const SizedBox(height: 12),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
                 '${widget.selectedSeatsCount} seat price',
-                style:  TextStyle(fontSize: 13, color: AppColors.textSecondary),
+                style: const TextStyle(
+                  fontSize: 13,
+                  color: AppColors.textSecondary,
+                ),
               ),
               Text(
                 '₹${seatTotal.toInt()}',
-                style:  TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.textPrimary),
+                style: const TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.textPrimary,
+                ),
               ),
             ],
           ),
-           SizedBox(height: 8),
+          const SizedBox(height: 8),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-               Text('Platform fee', style: TextStyle(fontSize: 13, color: AppColors.textSecondary)),
+              const Text(
+                'Platform fee',
+                style: TextStyle(fontSize: 13, color: AppColors.textSecondary),
+              ),
               Text(
                 '₹${platformFee.toInt()}',
-                style:  TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.textPrimary),
+                style: const TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.textPrimary,
+                ),
               ),
             ],
           ),
-           Divider(height: 24),
+          const Divider(height: 24),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-               Text(
+              const Text(
                 'Total amount',
-                style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textPrimary,
+                ),
               ),
               Text(
                 '₹${totalAmount.toInt()}',
-                style:  TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: AppColors.primaryNavy),
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.primaryNavy,
+                ),
               ),
             ],
           ),
@@ -437,8 +482,8 @@ class _PaymentScreenState extends State<PaymentScreen> {
 
   Widget _buildBottomBar() {
     return Container(
-      padding:  EdgeInsets.all(16),
-      decoration:  BoxDecoration(color: AppColors.white),
+      padding: const EdgeInsets.all(16),
+      decoration: const BoxDecoration(color: AppColors.white),
       child: SafeArea(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -447,54 +492,76 @@ class _PaymentScreenState extends State<PaymentScreen> {
               width: double.infinity,
               height: 48,
               child: ElevatedButton(
-                onPressed: () {
-                 
-                },
+                onPressed: ref.watch(tripsProvider).isBooking
+                    ? null
+                    : _payAndBook,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primaryNavy,
                   elevation: 0,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                     Icon(Icons.lock, color: AppColors.white, size: 16),
-                     SizedBox(width: 8),
-                    Text.rich(
-                      TextSpan(
+                child: ref.watch(tripsProvider).isBooking
+                    ? const SizedBox(
+                        height: 22,
+                        width: 22,
+                        child: CircularProgressIndicator(
+                          color: AppColors.white,
+                          strokeWidth: 2,
+                        ),
+                      )
+                    : Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                           TextSpan(
-                            text: 'Pay ',
-                            style: TextStyle(
-                              color: AppColors.oliveGold,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14,
-                            ),
+                          const Icon(
+                            Icons.lock,
+                            color: AppColors.white,
+                            size: 16,
                           ),
-                          TextSpan(
-                            text: '₹${totalAmount.toInt()}',
-                            style:  TextStyle(
-                              color: AppColors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14,
+                          const SizedBox(width: 8),
+                          Text.rich(
+                            TextSpan(
+                              children: [
+                                const TextSpan(
+                                  text: 'Pay ',
+                                  style: TextStyle(
+                                    color: AppColors.oliveGold,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                                TextSpan(
+                                  text: '₹${totalAmount.toInt()}',
+                                  style: const TextStyle(
+                                    color: AppColors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ],
                       ),
-                    ),
-                  ],
-                ),
               ),
             ),
-             SizedBox(height: 8),
+            const SizedBox(height: 8),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
-              children:  [
-                Icon(Icons.shield_outlined, color: AppColors.textSecondary, size: 12),
+              children: const [
+                Icon(
+                  Icons.shield_outlined,
+                  color: AppColors.textSecondary,
+                  size: 12,
+                ),
                 SizedBox(width: 4),
                 Text(
                   'Your payment data is encrypted and secure',
-                  style: TextStyle(fontSize: 10, color: AppColors.textSecondary),
+                  style: TextStyle(
+                    fontSize: 10,
+                    color: AppColors.textSecondary,
+                  ),
                 ),
               ],
             ),

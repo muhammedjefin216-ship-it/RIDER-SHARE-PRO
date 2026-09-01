@@ -1,14 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 
-/// "Can't find a ride? Create a ride alert..." dashed-border card.
-/// In Figma this renders persistently below the results list (not
-/// only on empty results) as a standing CTA to set up a ride alert.
-///
-/// NOTE: there's no ride-alert/notify API in the current codebase —
-/// [onNotifyMe] is left null-safe here so the card renders correctly
-/// even before that backend endpoint exists; wire the callback once
-/// it's ready.
+
 class RideAlertCard extends StatelessWidget {
   final VoidCallback? onNotifyMe;
 

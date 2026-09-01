@@ -1,11 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 
-/// Two-tone headline used on auth screens — the accent word renders
-/// bigger, in a serif font, olive-gold (matching the "Ride" treatment
-/// in BrandLogo); the rest renders smaller, sans-serif, dark navy/black.
-/// E.g. "Sign" + " in to your\naccount", or "Start" + " your carpooling
-/// journey today".
+
 class TwoToneTitle extends StatelessWidget {
   final String accentWord;
   final String restOfTitle;

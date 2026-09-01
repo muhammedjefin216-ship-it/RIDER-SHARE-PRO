@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 
-/// Plain hint-only text field (no label above) — used for the
-/// Route/Vehicle/Price inputs on Post Trip. Same visual style as the
-/// original _fieldDecoration, just reusable across fields/screens.
+
 class PlainTextField extends StatelessWidget {
   final TextEditingController controller;
   final String hint;

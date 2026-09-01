@@ -1,14 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 
-/// Map placeholder card — "GPS ACTIVE" badge, distance pill, and a
-/// footer split between estimated drive time and traffic condition.
-///
-/// NOTE: there's no real map/geocoding integration yet (same
-/// limitation the original code already commented on), so this
-/// stays a styled placeholder rather than real map tiles.
-/// [trafficLabel] is also static for now — the search API doesn't
-/// return live traffic data.
+
 class MapPlaceholderCard extends StatelessWidget {
   final String distanceLabel;
   final String estimatedDriveLabel;

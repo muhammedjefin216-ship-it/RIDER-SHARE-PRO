@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 
-/// Small colored notice strip — icon + message. Used for the amber
-/// "select from suggestions" warning, and reusable for similar
-/// warning/info/success banners elsewhere. Pass [title] for a bold
-/// heading above the message (e.g. "Cancellation Policy").
+
 class InlineNotice extends StatelessWidget {
   final String message;
   final String? title;

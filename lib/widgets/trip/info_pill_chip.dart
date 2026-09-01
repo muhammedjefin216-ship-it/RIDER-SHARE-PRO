@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 
-/// Small translucent-white pill with an icon + label — used inside
-/// [SearchSummaryBanner] for things like "📅 July 28, 2026" or
-/// "👤 1 Passenger".
 class InfoPillChip extends StatelessWidget {
   final IconData icon;
   final String label;

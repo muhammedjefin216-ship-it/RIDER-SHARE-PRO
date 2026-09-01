@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 
-/// Row of selectable pill options (Male / Female / Other). Purely
-/// presentational — caller owns the selected value + onChanged.
+
 class GenderSelector extends StatelessWidget {
   final List<String> options;
   final String selectedValue;

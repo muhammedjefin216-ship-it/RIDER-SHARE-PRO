@@ -2,10 +2,6 @@ import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 import 'plain_text_field.dart';
 
-/// "Leaving from..." / "Going to..." route fields with a green and
-/// red pin, connected by a dotted vertical line — matches the Figma
-/// route-details layout. [middleContent] slots in the "Add
-/// intermediate stop" button between the two fields.
 class RoutePinFields extends StatelessWidget {
   final TextEditingController fromController;
   final TextEditingController toController;
@@ -27,7 +23,7 @@ class RoutePinFields extends StatelessWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // Pin + dotted connector column
+              
               SizedBox(
                 width: 24,
                 child: Column(

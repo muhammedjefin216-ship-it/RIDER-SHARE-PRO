@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 
-/// White rounded strip of icon+label feature items, floating over the
-/// bottom edge of [HeroBanner] via a Stack/Positioned in the screen.
-/// Pass 2+ [FeatureStripItem]s; dividers are inserted automatically.
+
 class FeatureStrip extends StatelessWidget {
   final List<FeatureStripItem> items;
 

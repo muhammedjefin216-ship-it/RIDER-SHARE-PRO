@@ -1,13 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 
-/// Driver profile row — avatar (with verified check overlay), name,
-/// rating, and message/call icon buttons.
-///
-/// NOTE: Figma also shows "Member since 2022" under the rating —
-/// that field doesn't exist on RideSearchResult, so it's omitted
-/// here rather than faked. Pass [memberSinceLabel] once that data
-/// is available from the backend and it'll render automatically.
 class DriverContactCard extends StatelessWidget {
   final String avatarText;
   final bool verified;

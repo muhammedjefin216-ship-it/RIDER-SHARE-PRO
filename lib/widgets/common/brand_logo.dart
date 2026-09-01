@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 
-/// The "RideSharePro" wordmark with its navy icon badge.
-/// "Ride" renders bigger, in a serif font and olive-gold; "SharePro"
-/// renders smaller, sans-serif bold, in navy — matches the Figma
-/// wordmark exactly (the two words are NOT the same size/style).
+
 class BrandLogo extends StatelessWidget {
   final double iconSize;
   final double fontSize;

@@ -4,10 +4,6 @@ import 'trip_badge.dart';
 import 'route_timeline_display.dart';
 import 'trip_info_tile.dart';
 
-/// Rich trip card — trip ID, status badges, price, route timeline,
-/// date/availability tiles, and Details/Cancel actions. Richer than
-/// [TripListCard] (which is the compact row used on Home) — this is
-/// the full detail card used on the My Trips screen.
 class TripDetailCard extends StatelessWidget {
   final String tripId;
   final String roleBadgeLabel;
@@ -103,7 +99,13 @@ class TripDetailCard extends StatelessWidget {
                       color: AppColors.primaryNavy,
                     ),
                   ),
-                  Text(priceUnit, style: const TextStyle(fontSize: 11, color: AppColors.textSecondary)),
+                  Text(
+                    priceUnit,
+                    style: const TextStyle(
+                      fontSize: 11,
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
                 ],
               ),
             ],
@@ -141,10 +143,15 @@ class TripDetailCard extends StatelessWidget {
                     backgroundColor: AppColors.primaryNavy,
                     foregroundColor: AppColors.white,
                     elevation: 0,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
                     padding: const EdgeInsets.symmetric(vertical: 12),
                   ),
-                  child: const Text('Details', style: TextStyle(fontWeight: FontWeight.bold)),
+                  child: const Text(
+                    'Details',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
                 ),
               ),
               const SizedBox(width: 12),
@@ -157,7 +164,10 @@ class TripDetailCard extends StatelessWidget {
                   ),
                   child: const Text(
                     'Cancel Trip',
-                    style: TextStyle(color: Color(0xffDC2626), fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                      color: Color(0xffDC2626),
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ),

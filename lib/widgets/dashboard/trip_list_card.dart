@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 
-/// One trip row — route icon, title, date/time, price, and a
-/// "Hosting"/"Booked" tag. Reused on Home's "Upcoming Trips" list
-/// and the My Trips tab.
+
 class TripListCard extends StatelessWidget {
   final String title;
   final String date;
@@ -31,7 +29,7 @@ class TripListCard extends StatelessWidget {
         onTap: onTap ?? () {},
         borderRadius: BorderRadius.circular(16),
         child: Container(
-          padding: const EdgeInsets.all(14),
+          padding:  EdgeInsets.all(14),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(16),
             border: Border.all(color: AppColors.border),
@@ -45,13 +43,13 @@ class TripListCard extends StatelessWidget {
                   color: AppColors.lightInputBg,
                   borderRadius: BorderRadius.circular(13),
                 ),
-                child: const Icon(
+                child:  Icon(
                   Icons.directions_car_rounded,
                   color: AppColors.primaryNavy,
                   size: 24,
                 ),
               ),
-              const SizedBox(width: 13),
+               SizedBox(width: 13),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -60,24 +58,24 @@ class TripListCard extends StatelessWidget {
                       title,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
+                      style:  TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w700,
                         color: AppColors.textPrimary,
                       ),
                     ),
-                    const SizedBox(height: 6),
+                     SizedBox(height: 6),
                     Row(
                       children: [
-                        const Icon(Icons.schedule_rounded,
+                         Icon(Icons.schedule_rounded,
                             size: 12, color: AppColors.textSecondary),
-                        const SizedBox(width: 4),
+                         SizedBox(width: 4),
                         Expanded(
                           child: Text(
                             date,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
+                            style:  TextStyle(
                               fontSize: 10,
                               color: AppColors.textSecondary,
                             ),
@@ -88,22 +86,22 @@ class TripListCard extends StatelessWidget {
                   ],
                 ),
               ),
-              const SizedBox(width: 8),
+               SizedBox(width: 8),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text(
                     price,
-                    style: const TextStyle(
+                    style:  TextStyle(
                       color: AppColors.primaryNavy,
                       fontSize: 13,
                       fontWeight: FontWeight.w800,
                     ),
                   ),
-                  const SizedBox(height: 6),
+                   SizedBox(height: 6),
                   Container(
                     padding:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                         EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
                       color: isHosting
                           ? AppColors.hostingTagBg

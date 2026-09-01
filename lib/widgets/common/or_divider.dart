@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 
-/// "── OR ──" divider used between primary action and social login.
 class OrDivider extends StatelessWidget {
   const OrDivider({super.key});
 

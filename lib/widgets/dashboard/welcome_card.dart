@@ -2,10 +2,7 @@ import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 import 'quick_action_icon.dart';
 
-/// The dark navy hero card on Home — "WELCOME BACK" + greeting + date
-/// (serif, matching the brand style), an "Upcoming Trips" summary pill,
-/// and a row of 4 quick-action icons. All content/behavior is passed
-/// in by the screen — this widget is purely presentational.
+
 class WelcomeCard extends StatelessWidget {
   final String greetingName;
   final bool isLoadingName;
@@ -27,10 +24,10 @@ class WelcomeCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+      padding: EdgeInsets.symmetric(horizontal: 20),
       child: Container(
         width: double.infinity,
-        padding: const EdgeInsets.all(20),
+        padding: EdgeInsets.all(20),
         decoration: BoxDecoration(
           color: AppColors.primaryNavy,
           borderRadius: BorderRadius.circular(20),
@@ -38,14 +35,14 @@ class WelcomeCard extends StatelessWidget {
             BoxShadow(
               color: AppColors.primaryNavy.withOpacity(0.25),
               blurRadius: 20,
-              offset: const Offset(0, 8),
+              offset: Offset(0, 8),
             ),
           ],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               'WELCOME BACK',
               style: TextStyle(
                 fontFamily: 'serif',
@@ -55,9 +52,9 @@ class WelcomeCard extends StatelessWidget {
                 letterSpacing: 0.5,
               ),
             ),
-            const SizedBox(height: 6),
+            SizedBox(height: 6),
             isLoadingName
-                ? const SizedBox(
+                ? SizedBox(
                     width: 18,
                     height: 18,
                     child: CircularProgressIndicator(
@@ -69,28 +66,27 @@ class WelcomeCard extends StatelessWidget {
                     'Good afternoon, $greetingName',
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontFamily: 'serif',
                       color: AppColors.white,
                       fontSize: 15,
                     ),
                   ),
-            const SizedBox(height: 2),
+            SizedBox(height: 2),
             Text(
               dateLabel,
-              style: const TextStyle(
+              style: TextStyle(
                 fontFamily: 'serif',
                 color: Colors.white70,
                 fontSize: 13,
               ),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
 
-            // Upcoming trips summary pill
             GestureDetector(
               onTap: onUpcomingTripsTap,
               child: Container(
-                padding: const EdgeInsets.all(12),
+                padding: EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   color: AppColors.white.withOpacity(0.13),
                   borderRadius: BorderRadius.circular(14),
@@ -105,18 +101,18 @@ class WelcomeCard extends StatelessWidget {
                         color: AppColors.white.withOpacity(0.15),
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      child: const Icon(
+                      child: Icon(
                         Icons.calendar_month_rounded,
                         color: AppColors.white,
                         size: 17,
                       ),
                     ),
-                    const SizedBox(width: 12),
+                    SizedBox(width: 12),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
+                          Text(
                             'Upcoming Trips',
                             style: TextStyle(
                               color: AppColors.white,
@@ -124,27 +120,30 @@ class WelcomeCard extends StatelessWidget {
                               fontWeight: FontWeight.w700,
                             ),
                           ),
-                          const SizedBox(height: 2),
+                          SizedBox(height: 2),
                           Text(
                             'You have $upcomingTripsCount upcoming trips',
-                            style: const TextStyle(
+                            style: TextStyle(
                               color: Colors.white70,
                               fontSize: 10,
+                              
                             ),
                           ),
                         ],
                       ),
                     ),
-                    const Icon(Icons.chevron_right_rounded,
-                        color: Colors.white70, size: 18),
+                    Icon(
+                      Icons.chevron_right_rounded,
+                      color: Colors.white70,
+                      size: 18,
+                    ),
                   ],
                 ),
               ),
             ),
 
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
 
-            // Quick actions
             Row(children: quickActions),
           ],
         ),

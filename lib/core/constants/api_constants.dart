@@ -28,4 +28,16 @@ class ApiConstants {
   static const String logout = '$baseUrl/auth/logout';
 
   static const String currentUser = '$baseUrl/auth/me';
+
+  static String seatMap(String tripId) => '$baseUrl/trips/$tripId/seat-map';
+
+  static String bookTrip(String tripId) => '$baseUrl/trips/$tripId/book';
+
+  static const String createPaymentIntent = '$baseUrl/payments/create-intent';
+
+  static String tripDetails(String tripId) => '$baseUrl/trips/$tripId';
+
+  static String updateTrip(String tripId) => '$baseUrl/trips/$tripId';
+
+  static String cancelTrip(String tripId) => '$baseUrl/trips/$tripId/cancel';
 }

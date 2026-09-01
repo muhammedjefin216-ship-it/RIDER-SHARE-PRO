@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 
-/// Promotional banner card with a background image, dark gradient
-/// overlay for text legibility, title/subtitle, and a CTA button.
-/// Pass [backgroundImage] once you have the real photo asset —
-/// falls back to a navy gradient until then.
+
 class PromoBannerCard extends StatelessWidget {
   final String title;
   final String subtitle;

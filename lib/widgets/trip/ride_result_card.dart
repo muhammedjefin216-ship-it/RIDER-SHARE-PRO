@@ -1,16 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 
-/// Ride result card — driver avatar, name, verified badge, rating,
-/// price, vehicle info, seats-left chip, and a CTA button.
-///
-/// Only uses fields that exist on the current RideSearchResult model
-/// (avatar, driver, verified, rating, price, vehicleInfo, seatsLeft,
-/// departureDate, departTime). A few Figma details — trip count,
-/// pickup/drop-off addresses with gate labels, and the "adjacent
-/// date / last seats" banner — aren't in that model yet, so they're
-/// exposed here as optional params that simply hide when omitted:
-/// pass [adjacentDateLabel] + [onShare] once that data/flow exists.
+
 class RideResultCard extends StatelessWidget {
   final String departureDate;
   final String departTime;
@@ -23,8 +14,7 @@ class RideResultCard extends StatelessWidget {
   final int seatsLeft;
   final VoidCallback onViewRide;
 
-  /// Optional — only render the "ADJACENT DATE • ..." + "LAST SEATS"
-  /// header row when this is provided.
+
   final String? adjacentDateLabel;
   final bool isLastSeats;
   final VoidCallback? onShare;

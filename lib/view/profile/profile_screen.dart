@@ -575,9 +575,6 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  // ============================================================
-  // LOGOUT BUTTON
-  // ============================================================
   Widget _buildLogoutButton() {
     return SizedBox(
       width: double.infinity,
@@ -602,10 +599,6 @@ class ProfileScreen extends StatelessWidget {
       ),
     );
   }
-
-  // ============================================================
-  // BOTTOM NAVIGATION BAR
-  // ============================================================
   Widget _buildBottomNavigationBar() {
     return BottomNavigationBar(
       currentIndex: 3,
@@ -624,9 +617,7 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  // ============================================================
-  // HELPER SECTION HEADER
-  // ============================================================
+
   Widget _buildSectionHeader(String title, {String? actionText}) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,

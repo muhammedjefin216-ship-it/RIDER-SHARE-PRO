@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 
-/// Dark navy info/highlight card — icon in a circle, bold title,
-/// lighter subtitle underneath. Used for "Earn While You Drive" on
-/// Signup; reusable for similar promo/info callouts elsewhere.
 class InfoHighlightCard extends StatelessWidget {
   final IconData icon;
   final String title;

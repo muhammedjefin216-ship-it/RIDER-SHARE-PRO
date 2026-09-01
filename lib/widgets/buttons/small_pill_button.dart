@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 
-/// Small compact pill button — used for things like "Join Now"
-/// or "Sign in →" in a header row where a full PrimaryButton
-/// would be too big. Pass [trailingIcon] for the arrow variant.
+
 class SmallPillButton extends StatelessWidget {
   final String label;
   final VoidCallback onPressed;

@@ -1,10 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 
-/// Full-bleed dark navy hero banner used at the top of Signup —
-/// icon badge, two-tone heading (accent word gold/serif + rest white),
-/// and a white70 subtitle underneath. Reusable for other "intro"
-/// style banners if needed later.
 class HeroBanner extends StatelessWidget {
   final IconData icon;
   final String accentWord;

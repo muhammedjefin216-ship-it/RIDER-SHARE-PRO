@@ -13,10 +13,7 @@ class BottomNavItemData {
   });
 }
 
-/// Bottom navigation bar — supports any number of items (the Figma
-/// Home screen shows 6: Home, Find a Ride, Post a Trip, Trips,
-/// Earnings, Profile). [selectedIndex]/[onTap] are driven by the
-/// screen so existing IndexedStack logic keeps working unchanged.
+
 class AppBottomNavBar extends StatelessWidget {
   final List<BottomNavItemData> items;
   final int selectedIndex;

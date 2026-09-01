@@ -4,8 +4,7 @@ import '../../core/theme/app_text_styles.dart';
 import '../buttons/small_pill_button.dart';
 import '../buttons/text_link_button.dart';
 
-/// Top row shared by Login/Signup: logo badge + brand name,
-/// plus a text link + pill button pair (e.g. "Sign In" / "Join Now").
+
 class AuthHeader extends StatelessWidget {
   final String secondaryActionLabel;
   final VoidCallback onSecondaryAction;
@@ -31,20 +30,20 @@ class AuthHeader extends StatelessWidget {
             color: AppColors.primaryBlue,
             borderRadius: BorderRadius.circular(10),
           ),
-          child: const Icon(
+          child:  Icon(
             Icons.directions_car_rounded,
             color: AppColors.white,
             size: 22,
           ),
         ),
-        const SizedBox(width: 10),
-        const Text('RideSharePro', style: AppTextStyles.brandTitle),
-        const Spacer(),
+         SizedBox(width: 10),
+         Text('RideSharePro', style: AppTextStyles.brandTitle),
+         Spacer(),
         TextLinkButton(
           label: secondaryActionLabel,
           onPressed: onSecondaryAction,
         ),
-        const SizedBox(width: 6),
+         SizedBox(width: 6),
         SmallPillButton(
           label: primaryActionLabel,
           onPressed: onPrimaryAction,

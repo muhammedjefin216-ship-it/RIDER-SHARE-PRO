@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
 
-/// Small highlight card used in pairs on auth screens —
-/// e.g. "Safe & Secure" / "4.8★ Rating". Reusable anywhere you need
-/// an icon + title + subtitle in a soft rounded box.
+
 class FeatureHighlightCard extends StatelessWidget {
   final IconData icon;
   final String title;

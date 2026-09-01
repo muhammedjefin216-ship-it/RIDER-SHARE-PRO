@@ -2,10 +2,7 @@ import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 import '../common/brand_logo.dart';
 
-/// Top bar for the Home/Dashboard screen — brand logo on the left,
-/// notification bell (with unread dot) and a circular avatar menu
-/// button on the right. [avatarMenu] slots in a PopupMenuButton (or
-/// any widget) so the screen keeps control of the logout menu logic.
+
 class DashboardTopBar extends StatelessWidget {
   final VoidCallback onNotificationTap;
   final bool hasUnreadNotification;

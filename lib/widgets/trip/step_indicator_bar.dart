@@ -8,12 +8,7 @@ class StepItem {
 
 enum _StepState { completed, active, upcoming }
 
-/// Horizontal step indicator — numbered pill per step, connected by
-/// a short divider line.
-/// - Steps before [currentIndex] render as "completed" (light bg,
-///   checkmark instead of a number).
-/// - The step at [currentIndex] renders "active" (solid navy).
-/// - Steps after render "upcoming" (muted gray).
+
 class StepIndicatorBar extends StatelessWidget {
   final List<StepItem> steps;
   final int currentIndex;
@@ -66,8 +61,6 @@ class _StepPill extends StatelessWidget {
         : isCompleted
             ? AppColors.textPrimary
             : AppColors.textSecondary;
-    final circleBg = isActive ? AppColors.white : AppColors.primaryNavy;
-    final circleContentColor = isActive ? AppColors.primaryNavy : AppColors.white;
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),

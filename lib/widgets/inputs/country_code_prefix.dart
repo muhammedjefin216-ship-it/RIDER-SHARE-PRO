@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 
-/// "+91 |" country code prefix used inside the Phone Number
-/// [AppTextField] via its `customPrefix` slot.
+
 class CountryCodePrefix extends StatelessWidget {
   final String code;
 

@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 
-/// White rounded card with an icon badge + title header, and any
-/// child content underneath. Same pattern as the original
-/// _sectionCard, generalized into a reusable widget so every form
-/// section (Route Details, Seats & Pricing, etc.) shares one style.
+
 class SectionCard extends StatelessWidget {
   final IconData icon;
   final String title;

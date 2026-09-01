@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 
-/// Single seat tile — reflects booked (0) / available (1) /
-/// selected (2) state with the same color logic as the original
-/// _buildSeatWidget, just extracted into a standalone widget.
+
 class SeatTile extends StatelessWidget {
-  final int state; // 0 booked, 1 available, 2 selected
+  final int state;
   final VoidCallback? onTap;
 
   const SeatTile({super.key, required this.state, this.onTap});
@@ -43,9 +41,7 @@ class SeatTile extends StatelessWidget {
   }
 }
 
-/// Non-interactive "driver seat" tile shown alongside the passenger
-/// seat grid, purely decorative — matches the Figma layout where the
-/// driver's own seat is shown as a distinct, unselectable tile.
+
 class DriverSeatTile extends StatelessWidget {
   const DriverSeatTile({super.key});
 

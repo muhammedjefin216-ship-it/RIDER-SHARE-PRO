@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 
-/// White stat card — icon + caps label on top, big value, small
-/// subtitle underneath. Used in a 2x2 GridView/Row+Column on Home.
+
 class StatCard extends StatelessWidget {
   final IconData icon;
   final String label;

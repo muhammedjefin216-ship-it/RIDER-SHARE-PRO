@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 
-/// Soft, blurred circular blobs used as a subtle background decoration
-/// on the auth screens in Figma. Purely visual — sits behind the
-/// scrollable content via a Stack.
+
 class DecorativeBlobBackground extends StatelessWidget {
   const DecorativeBlobBackground({super.key});
 

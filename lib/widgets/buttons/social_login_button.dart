@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
 
-/// Outlined "Continue with Google" style button.
-/// Reusable for other social providers later — just swap the
-/// [icon] and [label].
+
 class SocialLoginButton extends StatelessWidget {
   final String label;
   final Widget icon;
@@ -51,7 +49,7 @@ class SocialLoginButton extends StatelessWidget {
   }
 }
 
-/// The Google "G" badge used inside [SocialLoginButton].
+
 class GoogleIcon extends StatelessWidget {
   const GoogleIcon({super.key});
 

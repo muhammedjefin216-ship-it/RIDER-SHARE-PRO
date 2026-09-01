@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 
-/// "AI Suggested: ₹X per seat" banner with a sparkle icon and a
-/// smaller explanation line underneath.
+
 class AiSuggestionBanner extends StatelessWidget {
   final String title;
   final String subtitle;

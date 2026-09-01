@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 
-/// One quick-action icon button inside [WelcomeCard]'s action row
-/// (Post Trip / Find Ride / My Trips / Profile). The active/highlighted
-/// item renders on a white pill; others render translucent-white on navy.
+
 class QuickActionIcon extends StatelessWidget {
   final IconData icon;
   final String label;

@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 
-/// Light lavender "Pro Tips for Hosts" card — title + a list of
-/// tips, each with a small checkmark bullet.
+
 class ProTipsCard extends StatelessWidget {
   final String title;
   final List<String> tips;

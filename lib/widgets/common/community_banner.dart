@@ -1,11 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 
-/// Bottom footer banner — soft background, overlapping avatar circles
-/// with a "+N" badge, and a bold caps label underneath (e.g.
-/// "GROWING COMMUNITY"). The Figma version uses a photo background;
-/// pass [backgroundImage] once you have the real asset/network image,
-/// otherwise it falls back to the light input color.
+
 class CommunityBanner extends StatelessWidget {
   final String label;
   final String extraCountLabel;

@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 
-/// Small breadcrumb row — bold page title on the left, a "← Dashboard"
-/// text link on the right. Sits below [PageHeaderBar] on inner pages.
+
 class PageIntroRow extends StatelessWidget {
   final String title;
   final String linkLabel;

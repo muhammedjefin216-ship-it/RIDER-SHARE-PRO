@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-/// Small rounded label badge — used for "HOST"/"UPCOMING" style tags
-/// on trip cards. Colors are passed in so it covers any status.
 class TripBadge extends StatelessWidget {
   final String label;
   final Color backgroundColor;

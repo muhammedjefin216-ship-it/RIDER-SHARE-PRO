@@ -12,12 +12,14 @@ class BookingReviewScreen extends StatefulWidget {
   final RideSearchResult ride;
   final int selectedSeatsCount;
   final double seatPrice;
+  final List<int> selectedSeatNumbers;
 
   const BookingReviewScreen({
     super.key,
     required this.ride,
     this.selectedSeatsCount = 1,
     this.seatPrice = 100.0,
+    this.selectedSeatNumbers = const [],
   });
 
   @override
@@ -66,23 +68,19 @@ class _BookingReviewScreenState extends State<BookingReviewScreen> {
       backgroundColor: AppColors.pageBackground,
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               GestureDetector(
                 onTap: () => Navigator.of(context).pop(),
                 child: Padding(
-                  padding: EdgeInsets.symmetric(vertical: 12),
+                  padding: const EdgeInsets.symmetric(vertical: 12),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(
-                        Icons.arrow_back,
-                        size: 20,
-                        color: AppColors.primaryNavy,
-                      ),
-                      SizedBox(width: 10),
+                      const Icon(Icons.arrow_back, size: 20, color: AppColors.primaryNavy),
+                      const SizedBox(width: 10),
                       Text.rich(
                         TextSpan(
                           children: [
@@ -109,29 +107,29 @@ class _BookingReviewScreenState extends State<BookingReviewScreen> {
                   ),
                 ),
               ),
-              StepIndicatorBar(
-                steps: [StepItem('Review'), StepItem('Payment')],
-                currentIndex: 0,
-              ),
-              SizedBox(height: 16),
-              _buildTripSummaryCard(),
-              SizedBox(height: 16),
-              _buildPriceDetailsCard(),
-              SizedBox(height: 16),
-              _buildPromoCodeCard(),
-              SizedBox(height: 16),
-              InlineNotice(
-                icon: Icons.info_outline,
-                title: 'Cancellation Policy',
-                message:
-                    'Free cancellation up to 24 hours before departure. After that, a 50% cancellation fee applies.',
-              ),
-              SizedBox(height: 12),
-              _buildTrustBadgesRow(),
-              SizedBox(height: 24),
-            ],
-          ),
+              const StepIndicatorBar(
+              steps: [StepItem('Review'), StepItem('Payment')],
+              currentIndex: 0,
+            ),
+            const SizedBox(height: 16),
+            _buildTripSummaryCard(),
+            const SizedBox(height: 16),
+            _buildPriceDetailsCard(),
+            const SizedBox(height: 16),
+            _buildPromoCodeCard(),
+            const SizedBox(height: 16),
+            const InlineNotice(
+              icon: Icons.info_outline,
+              title: 'Cancellation Policy',
+              message:
+                  'Free cancellation up to 24 hours before departure. After that, a 50% cancellation fee applies.',
+            ),
+            const SizedBox(height: 12),
+            _buildTrustBadgesRow(),
+            const SizedBox(height: 24),
+          ],
         ),
+      ),
       ),
       bottomNavigationBar: _buildBottomBar(),
     );
@@ -147,34 +145,26 @@ class _BookingReviewScreenState extends State<BookingReviewScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                'Trip Summary',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
-                ),
-              ),
+              const Text('Trip Summary',
+                  style: TextStyle(
+                      fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
               Container(
-                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
                   color: AppColors.lightInputBg,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
                   'Seat ${widget.selectedSeatsCount} Selected',
-                  style: TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.primaryNavy,
-                  ),
+                  style: const TextStyle(
+                      fontSize: 11, fontWeight: FontWeight.bold, color: AppColors.primaryNavy),
                 ),
               ),
             ],
           ),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           Container(
-            padding: EdgeInsets.all(12),
+            padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
               color: AppColors.lightInputBg,
               borderRadius: BorderRadius.circular(12),
@@ -185,88 +175,58 @@ class _BookingReviewScreenState extends State<BookingReviewScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      const Text('Boarding',
+                          style: TextStyle(
+                              fontSize: 11,
+                              color: AppColors.primaryNavy,
+                              fontWeight: FontWeight.bold)),
+                      const SizedBox(height: 2),
+                      Text(ride.from,
+                          style: const TextStyle(
+                              fontSize: 14, fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
+                      const SizedBox(height: 4),
                       Text(
-                        'Boarding',
-                        style: TextStyle(
-                          fontSize: 11,
-                          color: AppColors.primaryNavy,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      SizedBox(height: 2),
-                      Text(
-                        ride.from,
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.textPrimary,
-                        ),
-                      ),
-                      SizedBox(height: 4),
-                      Text(
-                        ride.distanceKm > 0
-                            ? '${ride.distanceKm.toStringAsFixed(1)} km'
-                            : '—',
-                        style: TextStyle(
-                          fontSize: 11,
-                          color: AppColors.textSecondary,
-                        ),
+                        ride.distanceKm > 0 ? '${ride.distanceKm.toStringAsFixed(1)} km' : '—',
+                        style: const TextStyle(fontSize: 11, color: AppColors.textSecondary),
                       ),
                     ],
                   ),
                 ),
-                Icon(
-                  Icons.arrow_forward,
-                  color: AppColors.primaryNavy,
-                  size: 20,
-                ),
+                const Icon(Icons.arrow_forward, color: AppColors.primaryNavy, size: 20),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      Text(
-                        'Alighting',
-                        style: TextStyle(
-                          fontSize: 11,
-                          color: AppColors.primaryNavy,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      SizedBox(height: 2),
-                      Text(
-                        ride.to,
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.textPrimary,
-                        ),
-                      ),
-                      SizedBox(height: 4),
-                      Text(
-                        _estimatedDrive,
-                        style: TextStyle(
-                          fontSize: 11,
-                          color: AppColors.textSecondary,
-                        ),
-                      ),
+                      const Text('Alighting',
+                          style: TextStyle(
+                              fontSize: 11,
+                              color: AppColors.primaryNavy,
+                              fontWeight: FontWeight.bold)),
+                      const SizedBox(height: 2),
+                      Text(ride.to,
+                          style: const TextStyle(
+                              fontSize: 14, fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
+                      const SizedBox(height: 4),
+                      Text(_estimatedDrive,
+                          style: const TextStyle(fontSize: 11, color: AppColors.textSecondary)),
                     ],
                   ),
                 ),
               ],
             ),
           ),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Column(
                 children: [
-                  Icon(Icons.circle, color: AppColors.successGreen, size: 12),
+                  const Icon(Icons.circle, color: AppColors.successGreen, size: 12),
                   Container(width: 2, height: 36, color: AppColors.border),
-                  Icon(Icons.circle, color: AppColors.primaryNavy, size: 12),
+                  const Icon(Icons.circle, color: AppColors.primaryNavy, size: 12),
                 ],
               ),
-              SizedBox(width: 12),
+              const SizedBox(width: 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -274,111 +234,65 @@ class _BookingReviewScreenState extends State<BookingReviewScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(
-                          'FROM',
-                          style: TextStyle(
-                            fontSize: 10,
-                            color: AppColors.textSecondary,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Text(
-                          ride.departureDate,
-                          style: TextStyle(
-                            fontSize: 11,
-                            color: AppColors.textSecondary,
-                          ),
-                        ),
+                        const Text('FROM',
+                            style: TextStyle(
+                                fontSize: 10,
+                                color: AppColors.textSecondary,
+                                fontWeight: FontWeight.bold)),
+                        Text(ride.departureDate,
+                            style: const TextStyle(fontSize: 11, color: AppColors.textSecondary)),
                       ],
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(
-                          ride.from,
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.textPrimary,
-                          ),
-                        ),
-                        Text(
-                          ride.departTime,
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.textPrimary,
-                          ),
-                        ),
+                        Text(ride.from,
+                            style: const TextStyle(
+                                fontSize: 14, fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
+                        Text(ride.departTime,
+                            style: const TextStyle(
+                                fontSize: 14, fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
                       ],
                     ),
-                    SizedBox(height: 14),
-                    Text(
-                      'TO',
-                      style: TextStyle(
-                        fontSize: 10,
-                        color: AppColors.textSecondary,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    Text(
-                      ride.to,
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimary,
-                      ),
-                    ),
-                    Text(
-                      'Expected arrival $_expectedArrival',
-                      style: TextStyle(
-                        fontSize: 11,
-                        color: AppColors.textSecondary,
-                      ),
-                    ),
+                    const SizedBox(height: 14),
+                    const Text('TO',
+                        style: TextStyle(
+                            fontSize: 10,
+                            color: AppColors.textSecondary,
+                            fontWeight: FontWeight.bold)),
+                    Text(ride.to,
+                        style: const TextStyle(
+                            fontSize: 14, fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
+                    Text('Expected arrival $_expectedArrival',
+                        style: const TextStyle(fontSize: 11, color: AppColors.textSecondary)),
                   ],
                 ),
               ),
             ],
           ),
-          Divider(height: 24),
+          const Divider(height: 24),
           Row(
             children: [
               CircleAvatar(
                 radius: 20,
                 backgroundColor: AppColors.primaryNavy,
-                child: Text(
-                  ride.avatar,
-                  style: TextStyle(
-                    color: AppColors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+                child: Text(ride.avatar,
+                    style: const TextStyle(color: AppColors.white, fontWeight: FontWeight.bold)),
               ),
-              SizedBox(width: 12),
+              const SizedBox(width: 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      ride.driver,
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14,
-                        color: AppColors.textPrimary,
-                      ),
-                    ),
+                    Text(ride.driver,
+                        style: const TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 14, color: AppColors.textPrimary)),
                     Row(
                       children: [
-                        Icon(Icons.star, color: AppColors.starGold, size: 14),
-                        SizedBox(width: 2),
-                        Text(
-                          ride.rating.toStringAsFixed(1),
-                          style: TextStyle(
-                            fontSize: 11,
-                            color: AppColors.textSecondary,
-                          ),
-                        ),
+                        const Icon(Icons.star, color: AppColors.starGold, size: 14),
+                        const SizedBox(width: 2),
+                        Text(ride.rating.toStringAsFixed(1),
+                            style: const TextStyle(fontSize: 11, color: AppColors.textSecondary)),
                       ],
                     ),
                   ],
@@ -387,19 +301,12 @@ class _BookingReviewScreenState extends State<BookingReviewScreen> {
               if (ride.vehicleInfo.isNotEmpty)
                 Column(
                   children: [
-                    Icon(
-                      Icons.directions_car_outlined,
-                      color: AppColors.textPrimary,
-                      size: 20,
-                    ),
+                    const Icon(Icons.directions_car_outlined, color: AppColors.textPrimary, size: 20),
                     SizedBox(
                       width: 70,
                       child: Text(
                         ride.vehicleInfo,
-                        style: TextStyle(
-                          fontSize: 10,
-                          color: AppColors.textSecondary,
-                        ),
+                        style: const TextStyle(fontSize: 10, color: AppColors.textSecondary),
                         overflow: TextOverflow.ellipsis,
                         textAlign: TextAlign.center,
                       ),
@@ -418,70 +325,39 @@ class _BookingReviewScreenState extends State<BookingReviewScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'Price Details',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
-            ),
-          ),
-          SizedBox(height: 12),
+          const Text('Price Details',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
+          const SizedBox(height: 12),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                '${widget.selectedSeatsCount} seat × ₹${widget.seatPrice.toInt()}',
-                style: TextStyle(fontSize: 13, color: AppColors.textSecondary),
-              ),
-              Text(
-                '₹${seatTotal.toInt()}',
-                style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.textPrimary,
-                ),
-              ),
+              Text('${widget.selectedSeatsCount} seat × ₹${widget.seatPrice.toInt()}',
+                  style: const TextStyle(fontSize: 13, color: AppColors.textSecondary)),
+              Text('₹${seatTotal.toInt()}',
+                  style: const TextStyle(
+                      fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.textPrimary)),
             ],
           ),
-          SizedBox(height: 8),
+          const SizedBox(height: 8),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                'Platform fee (5%)',
-                style: TextStyle(fontSize: 13, color: AppColors.textSecondary),
-              ),
-              Text(
-                '₹${platformFee.toInt()}',
-                style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.textPrimary,
-                ),
-              ),
+              const Text('Platform fee (5%)',
+                  style: TextStyle(fontSize: 13, color: AppColors.textSecondary)),
+              Text('₹${platformFee.toInt()}',
+                  style: const TextStyle(
+                      fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.textPrimary)),
             ],
           ),
-          Divider(height: 24),
+          const Divider(height: 24),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                'Total',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
-                ),
-              ),
-              Text(
-                '₹${totalAmount.toInt()}',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.primaryNavy,
-                ),
-              ),
+              const Text('Total',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
+              Text('₹${totalAmount.toInt()}',
+                  style: const TextStyle(
+                      fontSize: 20, fontWeight: FontWeight.bold, color: AppColors.primaryNavy)),
             ],
           ),
         ],
@@ -494,42 +370,30 @@ class _BookingReviewScreenState extends State<BookingReviewScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'PROMO CODE',
-            style: TextStyle(
-              fontSize: 10,
-              color: AppColors.textSecondary,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          SizedBox(height: 8),
+          const Text('PROMO CODE',
+              style: TextStyle(
+                  fontSize: 10, color: AppColors.textSecondary, fontWeight: FontWeight.bold)),
+          const SizedBox(height: 8),
           Row(
             children: [
               Expanded(
                 child: Container(
                   height: 44,
-                  padding: EdgeInsets.symmetric(horizontal: 12),
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
                   decoration: BoxDecoration(
                     color: AppColors.lightInputBg,
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Row(
                     children: [
-                      Icon(
-                        Icons.sell_outlined,
-                        color: AppColors.textSecondary,
-                        size: 18,
-                      ),
-                      SizedBox(width: 8),
+                      const Icon(Icons.sell_outlined, color: AppColors.textSecondary, size: 18),
+                      const SizedBox(width: 8),
                       Expanded(
                         child: TextField(
                           controller: _promoController,
-                          decoration: InputDecoration(
+                          decoration: const InputDecoration(
                             hintText: 'Enter promo code',
-                            hintStyle: TextStyle(
-                              fontSize: 12,
-                              color: AppColors.textSecondary,
-                            ),
+                            hintStyle: TextStyle(fontSize: 12, color: AppColors.textSecondary),
                             border: InputBorder.none,
                           ),
                         ),
@@ -538,7 +402,7 @@ class _BookingReviewScreenState extends State<BookingReviewScreen> {
                   ),
                 ),
               ),
-              SizedBox(width: 8),
+              const SizedBox(width: 8),
               SizedBox(
                 height: 44,
                 child: ElevatedButton(
@@ -546,18 +410,11 @@ class _BookingReviewScreenState extends State<BookingReviewScreen> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.lightInputBg,
                     elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                   ),
-                  child: Text(
-                    'Apply',
-                    style: TextStyle(
-                      color: AppColors.primaryNavy,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 13,
-                    ),
-                  ),
+                  child: const Text('Apply',
+                      style: TextStyle(
+                          color: AppColors.primaryNavy, fontWeight: FontWeight.bold, fontSize: 13)),
                 ),
               ),
             ],
@@ -570,7 +427,7 @@ class _BookingReviewScreenState extends State<BookingReviewScreen> {
   Widget _buildTrustBadgesRow() {
     return Row(
       children: [
-        Expanded(
+        const Expanded(
           child: TrustBadgeChip(
             icon: Icons.shield_outlined,
             label: 'Secured by Stripe Escrow',
@@ -578,8 +435,8 @@ class _BookingReviewScreenState extends State<BookingReviewScreen> {
             contentColor: Color(0xff2E7D32),
           ),
         ),
-        SizedBox(width: 8),
-        Expanded(
+        const SizedBox(width: 8),
+        const Expanded(
           child: TrustBadgeChip(
             icon: Icons.event_available,
             label: 'Free Cancellation until 24h',
@@ -593,8 +450,8 @@ class _BookingReviewScreenState extends State<BookingReviewScreen> {
 
   Widget _buildBottomBar() {
     return Container(
-      padding: EdgeInsets.all(16),
-      decoration: BoxDecoration(color: AppColors.white),
+      padding: const EdgeInsets.all(16),
+      decoration: const BoxDecoration(color: AppColors.white),
       child: SafeArea(
         child: PrimaryButton(
           label: 'Continue to Payment',
@@ -603,7 +460,16 @@ class _BookingReviewScreenState extends State<BookingReviewScreen> {
           onPressed: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (_) => PaymentScreen()),
+              MaterialPageRoute(
+                builder: (_) => PaymentScreen(
+                  selectedSeatsCount: widget.selectedSeatsCount,
+                  seatPrice: widget.seatPrice,
+                  tripId: widget.ride.id,
+                  fromOrder: widget.ride.fromOrder,
+                  toOrder: widget.ride.toOrder,
+                  selectedSeatNumbers: widget.selectedSeatNumbers,
+                ),
+              ),
             );
           },
         ),

@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 
-/// Display-only route timeline — filled navy dot at top, dotted
-/// connector, hollow gray dot at bottom, with from/to labels and
-/// sub-labels (e.g. "Departure Point" / "Destination").
+
 class RouteTimelineDisplay extends StatelessWidget {
   final String fromLabel;
   final String fromSubLabel;

@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 
-/// "Looking for more?" prompt card shown below the trips list —
-/// icon, title, subtitle, and a text+arrow CTA link.
+
 class ExploreMoreCard extends StatelessWidget {
   final String title;
   final String subtitle;

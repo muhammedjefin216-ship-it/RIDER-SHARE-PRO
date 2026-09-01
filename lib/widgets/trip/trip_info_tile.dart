@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 
-/// Small info tile — icon in a light circle, then a title/value pair.
-/// Used for Date & Time / Availability on the trip card.
 class TripInfoTile extends StatelessWidget {
   final IconData icon;
   final String title;

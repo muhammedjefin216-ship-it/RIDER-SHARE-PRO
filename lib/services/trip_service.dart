@@ -5,6 +5,10 @@ import 'dio_client.dart';
 class TripsService {
   Future<Dio> get _dio async => await DioClient.getInstance();
 
+  // ============================================================
+  // CREATE TRIP (Host a Ride)
+  // ============================================================
+
   Future<Response> createTrip({
     required String from,
     required String to,
@@ -51,6 +55,10 @@ class TripsService {
     }
   }
 
+  // ============================================================
+  // SEARCH TRIPS
+  // ============================================================
+
   Future<Response> searchTrips({
     required String from,
     required String to,
@@ -83,6 +91,10 @@ class TripsService {
     }
   }
 
+  // ============================================================
+  // GET MY TRIPS (hosted by current user)
+  // ============================================================
+
   Future<Response> getMyTrips() async {
     try {
       final dio = await _dio;
@@ -92,6 +104,97 @@ class TripsService {
       return response;
     } on DioException catch (e) {
       print('GET MY TRIPS ERROR');
+      print('STATUS: ${e.response?.statusCode}');
+      print('DATA: ${e.response?.data}');
+      rethrow;
+    }
+  }
+
+  // ============================================================
+  // GET SEAT MAP (real-time seat availability for a segment)
+  //
+  // Matches tripController.js -> getSeatMap exactly:
+  // GET /trips/:id/seat-map?fromOrder=X&toOrder=Y
+  // ============================================================
+
+  Future<Response> getSeatMap({
+    required String tripId,
+    required int fromOrder,
+    required int toOrder,
+  }) async {
+    try {
+      final dio = await _dio;
+
+      final response = await dio.get(
+        ApiConstants.seatMap(tripId),
+        queryParameters: {
+          'fromOrder': fromOrder,
+          'toOrder': toOrder,
+        },
+      );
+
+      return response;
+    } on DioException catch (e) {
+      print('GET SEAT MAP ERROR');
+      print('STATUS: ${e.response?.statusCode}');
+      print('DATA: ${e.response?.data}');
+      rethrow;
+    }
+  }
+
+  // ============================================================
+  // BOOK A TRIP SEGMENT (waypoint-to-waypoint)
+  //
+  // Matches tripController.js -> bookSegment exactly. Requires a
+  // real Stripe paymentIntentId — the backend calls verifyPayment()
+  // and rejects the request with 400 ("Payment required to book
+  // seats") if it's missing, so this must only be called AFTER a
+  // successful Stripe payment on the Flutter side.
+  // ============================================================
+
+  Future<Response> bookTrip({
+    required String tripId,
+    required int fromOrder,
+    required int toOrder,
+    required List<int> seatNumbers,
+    required String paymentIntentId,
+  }) async {
+    try {
+      final dio = await _dio;
+
+      final response = await dio.post(
+        ApiConstants.bookTrip(tripId),
+        data: {
+          'fromOrder': fromOrder,
+          'toOrder': toOrder,
+          'seatNumbers': seatNumbers,
+          'paymentIntentId': paymentIntentId,
+        },
+      );
+
+      return response;
+    } on DioException catch (e) {
+      print('BOOK TRIP ERROR');
+      print('STATUS: ${e.response?.statusCode}');
+      print('DATA: ${e.response?.data}');
+      rethrow;
+    }
+  }
+
+  // ============================================================
+  // GET TRIP DETAILS — matches tripController.js -> getTripById.
+  // Returns the RAW Trip document, not a reformatted shape.
+  // ============================================================
+
+  Future<Response> getTripDetails({required String tripId}) async {
+    try {
+      final dio = await _dio;
+
+      final response = await dio.get(ApiConstants.tripDetails(tripId));
+
+      return response;
+    } on DioException catch (e) {
+      print('GET TRIP DETAILS ERROR');
       print('STATUS: ${e.response?.statusCode}');
       print('DATA: ${e.response?.data}');
       rethrow;

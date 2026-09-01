@@ -3,13 +3,7 @@ import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_text_styles.dart';
 
-/// Standard labeled input field (label above + light-filled field)
-/// used across Login, Signup, Post Trip, Profile, etc.
-///
-/// Pass [suffixIcon] for things like the password visibility toggle.
-/// Pass [customPrefix] instead of [prefixIcon] for non-icon prefixes
-/// like the "+91 |" country code shown on the Phone Number field —
-/// when [customPrefix] is set it takes priority over [prefixIcon].
+
 class AppTextField extends StatelessWidget {
   final String label;
   final String hint;

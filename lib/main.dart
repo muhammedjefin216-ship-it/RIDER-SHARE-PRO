@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
+import 'package:ridesharepro/core/constants/stripe_constants.dart';
 import 'package:ridesharepro/view/auth/login_screen.dart';
 import 'package:ridesharepro/view/home/home_screen.dart';
 import 'providers/auth_provider.dart';
 
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  Stripe.publishableKey = StripeConstants.publishableKey;
+  await Stripe.instance.applySettings();
 
-// This is the starting point (1)
-
-void main() {
   runApp(ProviderScope(child: MyApp()));
 }
 
