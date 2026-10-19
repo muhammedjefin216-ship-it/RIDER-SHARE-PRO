@@ -3,10 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../providers/trips_provider.dart';
 import '../../core/theme/app_colors.dart';
+import '../../models/geocode_model.dart';
 import '../../widgets/common/page_header_bar.dart';
 import '../../widgets/common/page_intro_row.dart';
 import '../../widgets/trip/section_card.dart';
-import '../../widgets/trip/route_pin_fields.dart';
+import '../../widgets/trip/location_search_field.dart';
 import '../../widgets/trip/plain_text_field.dart';
 import '../../widgets/trip/date_time_picker_field.dart';
 import '../../widgets/trip/inline_notice.dart';
@@ -28,6 +29,12 @@ class _PostTripScreenState extends ConsumerState<PostTripScreen> {
   final toController = TextEditingController();
   final priceController = TextEditingController();
   final vehicleController = TextEditingController();
+
+  // Real coordinates, only populated when the user taps a suggestion in
+  // LocationSearchField — never filled from raw typed text. Replaces the
+  // old hardcoded 0.0001 values that were sent regardless of input.
+  GeocodeResult? _fromLocation;
+  GeocodeResult? _toLocation;
 
   DateTime? selectedDate;
   TimeOfDay? selectedTime;
@@ -79,6 +86,18 @@ class _PostTripScreenState extends ConsumerState<PostTripScreen> {
       return;
     }
 
+    // Real coordinates are required now — a selection must have come from
+    // the suggestions list, not just typed text (that's exactly what the
+    // InlineNotice below the fields already told the user to do).
+    if (_fromLocation == null || _fromLocation!.lat == 0 && _fromLocation!.lon == 0) {
+      showMessage('Please select your pickup location from the suggestions list');
+      return;
+    }
+    if (_toLocation == null || _toLocation!.lat == 0 && _toLocation!.lon == 0) {
+      showMessage('Please select your destination from the suggestions list');
+      return;
+    }
+
     final dateStr =
         '${selectedDate!.year}-${selectedDate!.month.toString().padLeft(2, '0')}-${selectedDate!.day.toString().padLeft(2, '0')}';
     final timeStr =
@@ -87,10 +106,10 @@ class _PostTripScreenState extends ConsumerState<PostTripScreen> {
     final result = await ref.read(tripsProvider.notifier).createTrip(
           from: from,
           to: to,
-          fromLat: 0.0001,
-          fromLon: 0.0001,
-          toLat: 0.0001,
-          toLon: 0.0001,
+          fromLat: _fromLocation!.lat,
+          fromLon: _fromLocation!.lon,
+          toLat: _toLocation!.lat,
+          toLon: _toLocation!.lon,
           departureDate: dateStr,
           departureTime: timeStr,
           totalSeats: seats,
@@ -171,32 +190,44 @@ class _PostTripScreenState extends ConsumerState<PostTripScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          RoutePinFields(
-                            fromController: fromController,
-                            toController: toController,
-                            middleContent: TextButton.icon(
-                              onPressed: () {
-                                showMessage(
-                                  'Intermediate stops need location search — coming with map integration.',
-                                  isError: false,
-                                );
-                              },
-                              icon: const Icon(Icons.add_circle_outline,
-                                  size: 16, color: AppColors.primaryNavy),
-                              label: const Text(
-                                'Add intermediate stop',
-                                style: TextStyle(
-                                  color: AppColors.primaryNavy,
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w600,
-                                ),
+                          LocationSearchField(
+                            controller: fromController,
+                            hint: 'From — search a city or address',
+                            icon: Icons.radio_button_checked,
+                            onSelected: (result) =>
+                                setState(() => _fromLocation = result),
+                          ),
+                          const SizedBox(height: 10),
+                          LocationSearchField(
+                            controller: toController,
+                            hint: 'To — search a city or address',
+                            icon: Icons.location_on,
+                            onSelected: (result) =>
+                                setState(() => _toLocation = result),
+                          ),
+                          const SizedBox(height: 4),
+                          TextButton.icon(
+                            onPressed: () {
+                              showMessage(
+                                'Intermediate stops are coming in a future update.',
+                                isError: false,
+                              );
+                            },
+                            icon: const Icon(Icons.add_circle_outline,
+                                size: 16, color: AppColors.primaryNavy),
+                            label: const Text(
+                              'Add intermediate stop',
+                              style: TextStyle(
+                                color: AppColors.primaryNavy,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
                               ),
-                              style: TextButton.styleFrom(
-                                padding: EdgeInsets.zero,
-                                minimumSize: Size.zero,
-                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                alignment: Alignment.centerLeft,
-                              ),
+                            ),
+                            style: TextButton.styleFrom(
+                              padding: EdgeInsets.zero,
+                              minimumSize: Size.zero,
+                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                              alignment: Alignment.centerLeft,
                             ),
                           ),
                           const SizedBox(height: 12),
@@ -258,7 +289,7 @@ class _PostTripScreenState extends ConsumerState<PostTripScreen> {
                           ),
                           const SizedBox(height: 4),
                           const Text(
-                            'Maximum 6 seats',
+                            'Maximum ts',
                             style: TextStyle(fontSize: 10, color: AppColors.hintText),
                           ),
                           const SizedBox(height: 16),
@@ -360,7 +391,7 @@ class _PostTripScreenState extends ConsumerState<PostTripScreen> {
                               ),
                               Switch(
                                 value: womenOnly,
-                                activeColor: AppColors.primaryNavy,
+                                activeThumbColor: AppColors.primaryNavy,
                                 onChanged: (value) => setState(() => womenOnly = value),
                               ),
                             ],

@@ -1,185 +1,178 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
+
 import '../../core/theme/app_colors.dart';
 
-/// Decorative route map card — "GPS ACTIVE" badge, Street/Satellite
-/// toggle (visual only), a distance+drive-time pill, and a 3-column
-/// stats footer.
+/// Real route map using flutter_map + OpenStreetMap tiles (no API key —
+/// matches the backend's Nominatim-based geocoding setup). Replaces the
+/// previous placeholder version of this card, which only showed distance
+/// text with no actual map.
 ///
-/// NOTE: same limitation as the seat-selection map — no real map/
-/// geocoding integration exists yet, so this is a styled
-/// placeholder, not a live map. The Street/Satellite toggle doesn't
-/// switch any real content. "Route Feed: Live" is decorative text,
-/// not a real live-tracking feed.
-class RouteMapCard extends StatefulWidget {
+/// NOTE: I don't have the original route_map_card.dart source (it was
+/// never shared), so this is a full rewrite based on the only known
+/// call site (trip_details_screen.dart passing distanceLabel, distanceKm,
+/// estimatedDriveLabel). If this card is used anywhere else with a
+/// different constructor shape, that call site will need updating to
+/// match this one.
+class RouteMapCard extends StatelessWidget {
   final String distanceLabel;
   final double distanceKm;
   final String estimatedDriveLabel;
+  // Ordered list of route points (start -> intermediate stops -> end).
+  // Pass trip.orderedRoutePoints.map((w) => LatLng(w.lat, w.lng)).toList()
+  final List<LatLng> routePoints;
 
   const RouteMapCard({
     super.key,
     required this.distanceLabel,
     required this.distanceKm,
     required this.estimatedDriveLabel,
+    required this.routePoints,
   });
 
-  @override
-  State<RouteMapCard> createState() => _RouteMapCardState();
-}
-
-class _RouteMapCardState extends State<RouteMapCard> {
-  bool _streetSelected = true;
+  LatLngBounds? get _bounds {
+    if (routePoints.isEmpty) return null;
+    if (routePoints.length == 1) {
+      return LatLngBounds(routePoints.first, routePoints.first);
+    }
+    return LatLngBounds.fromPoints(routePoints);
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Container(
-          height: 170,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
-            color: const Color(0xffE5E9F0),
-          ),
-          child: Stack(
-            children: [
-              Positioned(
-                top: 12,
-                left: 12,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: AppColors.white,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const CircleAvatar(radius: 4, backgroundColor: AppColors.successGreen),
-                      const SizedBox(width: 6),
-                      const Text(
-                        'GPS ACTIVE',
+    final bounds = _bounds;
+    final hasRoute = routePoints.isNotEmpty;
+
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.border),
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            height: 200,
+            width: double.infinity,
+            child: !hasRoute
+                ? Container(
+                    color: AppColors.lightInputBg,
+                    child: const Center(
+                      child: Text(
+                        'Route location unavailable',
                         style: TextStyle(
-                          fontSize: 10,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.primaryNavy,
+                          fontSize: 12,
+                          color: AppColors.textSecondary,
                         ),
+                      ),
+                    ),
+                  )
+                : FlutterMap(
+                    options: MapOptions(
+                      initialCameraFit: bounds != null
+                          ? CameraFit.bounds(
+                              bounds: bounds,
+                              padding: const EdgeInsets.all(40),
+                            )
+                          : null,
+                      interactionOptions: const InteractionOptions(
+                        flags: InteractiveFlag.pinchZoom | InteractiveFlag.drag,
+                      ),
+                    ),
+                    children: [
+                      TileLayer(
+                        urlTemplate:
+                            'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                        userAgentPackageName: 'com.ridesharepro.app',
+                      ),
+                      if (routePoints.length >= 2)
+                        PolylineLayer(
+                          polylines: [
+                            Polyline(
+                              points: routePoints,
+                              strokeWidth: 4,
+                              color: AppColors.primaryNavy,
+                            ),
+                          ],
+                        ),
+                      MarkerLayer(
+                        markers: [
+                          Marker(
+                            point: routePoints.first,
+                            width: 36,
+                            height: 36,
+                            child: const Icon(
+                              Icons.radio_button_checked,
+                              color: AppColors.successGreen,
+                              size: 28,
+                            ),
+                          ),
+                          if (routePoints.length > 1)
+                            Marker(
+                              point: routePoints.last,
+                              width: 36,
+                              height: 36,
+                              child: const Icon(
+                                Icons.location_on,
+                                color: AppColors.error,
+                                size: 32,
+                              ),
+                            ),
+                          // Intermediate stops, if any.
+                          for (final point in routePoints.sublist(
+                            1,
+                            routePoints.length > 1 ? routePoints.length - 1 : 1,
+                          ))
+                            Marker(
+                              point: point,
+                              width: 20,
+                              height: 20,
+                              child: const Icon(
+                                Icons.circle,
+                                color: AppColors.primaryNavy,
+                                size: 12,
+                              ),
+                            ),
+                        ],
                       ),
                     ],
                   ),
-                ),
-              ),
-              Positioned(
-                top: 12,
-                right: 12,
-                child: Container(
-                  padding: const EdgeInsets.all(2),
-                  decoration: BoxDecoration(
-                    color: AppColors.white,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      _toggleChip('Street', _streetSelected, () => setState(() => _streetSelected = true)),
-                      _toggleChip('Satellite', !_streetSelected, () => setState(() => _streetSelected = false)),
-                    ],
-                  ),
-                ),
-              ),
-              Positioned(
-                bottom: 12,
-                left: 12,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: AppColors.primaryNavy,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Text(
-                    '${widget.distanceLabel} • ${widget.estimatedDriveLabel}',
-                    style: const TextStyle(
-                      color: AppColors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 12,
-                    ),
-                  ),
-                ),
-              ),
-            ],
           ),
-        ),
-        const SizedBox(height: 10),
-        Container(
-          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-          decoration: BoxDecoration(
-            color: AppColors.white,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: AppColors.border),
+          Padding(
+            padding: const EdgeInsets.all(14),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                _statItem(Icons.route_outlined, distanceLabel, 'Distance'),
+                Container(width: 1, height: 28, color: AppColors.border),
+                _statItem(Icons.schedule_outlined, estimatedDriveLabel, 'Est. drive'),
+              ],
+            ),
           ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              _footerStat('DISTANCE', widget.distanceLabel),
-              _footerStat('EST. DRIVE', widget.estimatedDriveLabel),
-              _footerStatWithDot('ROUTE FEED', 'Live'),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _toggleChip(String label, bool selected, VoidCallback onTap) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-        decoration: BoxDecoration(
-          color: selected ? AppColors.primaryNavy : Colors.transparent,
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Text(
-          label,
-          style: TextStyle(
-            fontSize: 10,
-            fontWeight: FontWeight.bold,
-            color: selected ? AppColors.white : AppColors.textSecondary,
-          ),
-        ),
+        ],
       ),
     );
   }
 
-  Widget _footerStat(String label, String value) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+  Widget _statItem(IconData icon, String value, String label) {
+    return Row(
       children: [
-        Text(label,
-            style: const TextStyle(fontSize: 9, color: AppColors.hintText, fontWeight: FontWeight.w600)),
-        const SizedBox(height: 2),
-        Text(value,
-            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
-      ],
-    );
-  }
-
-  Widget _footerStatWithDot(String label, String value) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(label,
-            style: const TextStyle(fontSize: 9, color: AppColors.hintText, fontWeight: FontWeight.w600)),
-        const SizedBox(height: 2),
-        Row(
+        Icon(icon, size: 16, color: AppColors.primaryNavy),
+        const SizedBox(width: 6),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              width: 6,
-              height: 6,
-              decoration: const BoxDecoration(color: AppColors.successGreen, shape: BoxShape.circle),
+            Text(
+              value,
+              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
             ),
-            const SizedBox(width: 4),
-            Text(value,
-                style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
+            Text(
+              label,
+              style: const TextStyle(fontSize: 10, color: AppColors.textSecondary),
+            ),
           ],
         ),
       ],

@@ -18,14 +18,14 @@ class PaymentScreen extends ConsumerStatefulWidget {
   final List<int> selectedSeatNumbers;
 
   const PaymentScreen({
-    Key? key,
+    super.key,
     this.selectedSeatsCount = 1,
     this.seatPrice = 100.0,
     this.tripId,
     this.fromOrder,
     this.toOrder,
     this.selectedSeatNumbers = const [],
-  }) : super(key: key);
+  });
 
   @override
   ConsumerState<PaymentScreen> createState() => _PaymentScreenState();
@@ -118,8 +118,9 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
     }
 
     final paymentIntentId = await _createStripePaymentIntent();
-    if (paymentIntentId == null)
-      return; 
+    if (paymentIntentId == null) {
+      return;
+    } 
 
     final result = await ref
         .read(tripsProvider.notifier)
@@ -389,7 +390,7 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
                 _saveInfo = val;
               });
             },
-            activeColor: AppColors.primaryNavy,
+            activeThumbColor: AppColors.primaryNavy,
           ),
         ],
       ),

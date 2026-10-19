@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 
-
 class BrandLogo extends StatelessWidget {
   final double iconSize;
   final double fontSize;
-  
+  final double? imageWidth;
+  final double? imageHeight;
+
   const BrandLogo({
     super.key,
-    this.iconSize = 38,
-    this.fontSize = 20,
+    this.iconSize = 65,
+    this.fontSize = 40,
+    this.imageWidth = 40,
+    this.imageHeight = 35,
   });
 
   @override
@@ -17,20 +20,13 @@ class BrandLogo extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Container(
-          height: iconSize,
-          width: iconSize,
-          decoration: BoxDecoration(
-            color: AppColors.primaryNavy,
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Icon(
-            Icons.directions_car_rounded,
-            color: AppColors.white,
-            size: iconSize * 0.58,
-          ),
+        Image.asset(
+          'assets/images/logo.png', 
+          width: imageWidth ?? iconSize,
+          height: imageHeight ?? iconSize,
+          fit: BoxFit.contain,
         ),
-        const SizedBox(width: 10),
+        const SizedBox(width: 3),
         Text.rich(
           TextSpan(
             children: [

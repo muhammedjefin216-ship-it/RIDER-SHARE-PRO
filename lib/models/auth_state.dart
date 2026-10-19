@@ -19,6 +19,15 @@ class AuthState {
   final double? userRating;
   final int? userTotalRatings;
 
+  // Added to match User.js schema — used by the Profile screen
+  final String? userPhone;
+  final String? userGender;
+  final String? userLocation;
+  final String? userEmergencyContact;
+  final bool? userIsVerified;
+  final bool? userIsEmailVerified;
+  final String? userAuthProvider;
+
   final String? errorMessage;
 
   const AuthState({
@@ -39,6 +48,13 @@ class AuthState {
     this.userPhoto,
     this.userRating,
     this.userTotalRatings,
+    this.userPhone,
+    this.userGender,
+    this.userLocation,
+    this.userEmergencyContact,
+    this.userIsVerified,
+    this.userIsEmailVerified,
+    this.userAuthProvider,
     this.errorMessage,
   });
 
@@ -60,6 +76,13 @@ class AuthState {
     String? userPhoto,
     double? userRating,
     int? userTotalRatings,
+    String? userPhone,
+    String? userGender,
+    String? userLocation,
+    String? userEmergencyContact,
+    bool? userIsVerified,
+    bool? userIsEmailVerified,
+    String? userAuthProvider,
     String? errorMessage,
     bool clearError = false,
   }) {
@@ -83,6 +106,13 @@ class AuthState {
       userPhoto: userPhoto ?? this.userPhoto,
       userRating: userRating ?? this.userRating,
       userTotalRatings: userTotalRatings ?? this.userTotalRatings,
+      userPhone: userPhone ?? this.userPhone,
+      userGender: userGender ?? this.userGender,
+      userLocation: userLocation ?? this.userLocation,
+      userEmergencyContact: userEmergencyContact ?? this.userEmergencyContact,
+      userIsVerified: userIsVerified ?? this.userIsVerified,
+      userIsEmailVerified: userIsEmailVerified ?? this.userIsEmailVerified,
+      userAuthProvider: userAuthProvider ?? this.userAuthProvider,
       errorMessage: clearError ? null : errorMessage ?? this.errorMessage,
     );
   }

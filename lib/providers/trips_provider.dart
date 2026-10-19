@@ -1,3 +1,6 @@
+
+
+
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ridesharepro/services/trip_service.dart';
@@ -45,6 +48,10 @@ class TripsState {
   final TripDetail? tripDetail;
   final String? tripDetailError;
 
+  // Cancel trip state.
+  final bool isCancellingTrip;
+  final String? cancelTripError;
+
   const TripsState({
     this.isLoading = false,
     this.isPosting = false,
@@ -62,6 +69,8 @@ class TripsState {
     this.isLoadingTripDetail = false,
     this.tripDetail,
     this.tripDetailError,
+    this.isCancellingTrip = false,
+    this.cancelTripError,
   });
 
   TripsState copyWith({
@@ -85,6 +94,9 @@ class TripsState {
     TripDetail? tripDetail,
     String? tripDetailError,
     bool clearTripDetailError = false,
+    bool? isCancellingTrip,
+    String? cancelTripError,
+    bool clearCancelTripError = false,
   }) {
     return TripsState(
       isLoading: isLoading ?? this.isLoading,
@@ -103,6 +115,8 @@ class TripsState {
       isLoadingTripDetail: isLoadingTripDetail ?? this.isLoadingTripDetail,
       tripDetail: tripDetail ?? this.tripDetail,
       tripDetailError: clearTripDetailError ? null : tripDetailError ?? this.tripDetailError,
+      isCancellingTrip: isCancellingTrip ?? this.isCancellingTrip,
+      cancelTripError: clearCancelTripError ? null : cancelTripError ?? this.cancelTripError,
     );
   }
 }
@@ -352,6 +366,40 @@ class TripsNotifier extends Notifier<TripsState> {
       print('GET TRIP DETAIL UNKNOWN ERROR: $e');
       state = state.copyWith(isLoadingTripDetail: false, tripDetailError: e.toString());
       return false;
+    }
+  }
+
+  // ============================================================
+  // CANCEL TRIP — matches tripController.js -> cancelTrip.
+  // Refreshes the trips list on success so the cancelled trip's
+  // status updates everywhere immediately.
+  // ============================================================
+
+  Future<Map<String, dynamic>> cancelTrip(String tripId) async {
+    state = state.copyWith(isCancellingTrip: true, clearCancelTripError: true);
+
+    try {
+      final response = await _tripsService.cancelTrip(tripId: tripId);
+
+      state = state.copyWith(isCancellingTrip: false, clearCancelTripError: true);
+
+      // Refresh so the card shows "CANCELLED" immediately.
+      await fetchMyTrips();
+
+      return {
+        'success': true,
+        'message': response.data['message'] ?? 'Trip cancelled successfully',
+      };
+    } on DioException catch (e) {
+      String message = 'Unable to cancel trip';
+      if (e.response?.data is Map && e.response!.data['message'] != null) {
+        message = e.response!.data['message'].toString();
+      }
+      state = state.copyWith(isCancellingTrip: false, cancelTripError: message);
+      return {'success': false, 'message': message};
+    } catch (e) {
+      state = state.copyWith(isCancellingTrip: false, cancelTripError: e.toString());
+      return {'success': false, 'message': e.toString()};
     }
   }
 }

@@ -9,14 +9,29 @@ class TripWaypoint {
   final String name;
   final double distanceFromStart;
   final int order;
+  // Mongo stores GeoJSON-style [longitude, latitude] — NOT [lat, lng].
+  // Keep the raw array as-is, and expose .lat/.lng getters below that
+  // handle the reversal, so nothing downstream has to remember the
+  // ordering convention.
+  final List<double> coordinates;
 
-  TripWaypoint({required this.name, required this.distanceFromStart, required this.order});
+  TripWaypoint({
+    required this.name,
+    required this.distanceFromStart,
+    required this.order,
+    required this.coordinates,
+  });
+
+  double get lng => coordinates.isNotEmpty ? coordinates[0] : 0.0;
+  double get lat => coordinates.length > 1 ? coordinates[1] : 0.0;
 
   factory TripWaypoint.fromJson(Map<String, dynamic> json) {
+    final rawCoords = (json['coordinates'] as List?) ?? [];
     return TripWaypoint(
       name: (json['name'] ?? '').toString(),
       distanceFromStart: (json['distanceFromStart'] as num?)?.toDouble() ?? 0.0,
       order: (json['order'] as num?)?.toInt() ?? 0,
+      coordinates: rawCoords.map((e) => (e as num).toDouble()).toList(),
     );
   }
 }
@@ -117,6 +132,11 @@ class TripDetail {
   final int seatsAvailable;
   final String vehicleInfo;
   final TripDriver? driver;
+  // Raw GeoJSON [lng, lat] — same ordering caveat as TripWaypoint.
+  // Kept mainly for completeness/future use; the route polyline itself
+  // is built from `waypoints`, which already includes start and end.
+  final List<double> fromLocationCoordinates;
+  final List<double> toLocationCoordinates;
 
   TripDetail({
     required this.id,
@@ -136,12 +156,33 @@ class TripDetail {
     required this.seatsAvailable,
     required this.vehicleInfo,
     this.driver,
+    this.fromLocationCoordinates = const [],
+    this.toLocationCoordinates = const [],
   });
+
+  double get fromLat =>
+      fromLocationCoordinates.length > 1 ? fromLocationCoordinates[1] : 0.0;
+  double get fromLng =>
+      fromLocationCoordinates.isNotEmpty ? fromLocationCoordinates[0] : 0.0;
+  double get toLat =>
+      toLocationCoordinates.length > 1 ? toLocationCoordinates[1] : 0.0;
+  double get toLng =>
+      toLocationCoordinates.isNotEmpty ? toLocationCoordinates[0] : 0.0;
+
+  // Full ordered route for drawing on the map — waypoints already
+  // include the start (order 0) and end (highest order) per Trip.js's
+  // pre-save hook, so sorting by `order` alone gives the complete path.
+  List<TripWaypoint> get orderedRoutePoints {
+    final sorted = [...waypoints]..sort((a, b) => a.order.compareTo(b.order));
+    return sorted;
+  }
 
   factory TripDetail.fromJson(Map<String, dynamic> json) {
     final rawWaypoints = (json['waypoints'] as List?) ?? [];
     final rawSeats = (json['seats'] as List?) ?? [];
     final rawDriver = json['driverId'];
+    final rawFromLocation = json['fromLocation'] as Map<String, dynamic>?;
+    final rawToLocation = json['toLocation'] as Map<String, dynamic>?;
 
     return TripDetail(
       id: (json['_id'] ?? '').toString(),
@@ -162,6 +203,12 @@ class TripDetail {
       seatsAvailable: (json['seatsAvailable'] as num?)?.toInt() ?? 0,
       vehicleInfo: (json['vehicleInfo'] ?? '').toString(),
       driver: rawDriver is Map<String, dynamic> ? TripDriver.fromJson(rawDriver) : null,
+      fromLocationCoordinates: ((rawFromLocation?['coordinates'] as List?) ?? [])
+          .map((e) => (e as num).toDouble())
+          .toList(),
+      toLocationCoordinates: ((rawToLocation?['coordinates'] as List?) ?? [])
+          .map((e) => (e as num).toDouble())
+          .toList(),
     );
   }
 

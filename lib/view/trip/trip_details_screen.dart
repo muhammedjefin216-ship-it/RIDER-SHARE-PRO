@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:latlong2/latlong.dart';
 
 import '../../providers/trips_provider.dart';
 import '../../providers/auth_provider.dart';
@@ -108,6 +109,14 @@ class _TripDetailsScreenState extends ConsumerState<TripDetailsScreen> {
   Widget _buildContent(TripDetail trip, dynamic authState) {
     final isHost = trip.driver != null && trip.driver!.id == authState.userId;
 
+    // Real route points for the map, built from waypoints (which already
+    // include the start and end per Trip.js's pre-save hook) — converts
+    // the stored [lng, lat] ordering into flutter_map's LatLng(lat, lng).
+    final routePoints = trip.orderedRoutePoints
+        .where((w) => w.coordinates.length >= 2)
+        .map((w) => LatLng(w.lat, w.lng))
+        .toList();
+
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Column(
@@ -199,6 +208,7 @@ class _TripDetailsScreenState extends ConsumerState<TripDetailsScreen> {
             distanceLabel: '${trip.totalDistanceKm.toStringAsFixed(2)} km',
             distanceKm: trip.totalDistanceKm,
             estimatedDriveLabel: _estimatedDrive(trip.totalDistanceKm),
+            routePoints: routePoints,
           ),
 
           const SizedBox(height: 20),

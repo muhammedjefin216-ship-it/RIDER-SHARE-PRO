@@ -1,11 +1,12 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:latlong2/latlong.dart';
+
 import '../../models/ride_search_result.dart';
 import '../../providers/trips_provider.dart';
 import '../../core/theme/app_colors.dart';
 import '../../widgets/common/back_title_bar.dart';
-import '../../widgets/trip/map_placeholder_card.dart';
+import '../../widgets/trip/route_map_card.dart';
 import '../../widgets/trip/driver_contact_card.dart';
 import '../../widgets/trip/seat_legend.dart';
 import '../../widgets/trip/seat_tile.dart';
@@ -36,7 +37,13 @@ class _BookingFlowScreenState extends ConsumerState<BookingScreen> {
   void initState() {
     super.initState();
     _generateFallbackSeatStates();
-    WidgetsBinding.instance.addPostFrameCallback((_) => _loadRealSeatMap());
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadRealSeatMap();
+      // Full trip detail isn't returned by the search endpoint
+      // (RideSearchResult has no coordinates), but it does have real
+      // waypoint coordinates — fetch it just for the map.
+      ref.read(tripsProvider.notifier).fetchTripDetail(widget.ride.id);
+    });
   }
 
   void _generateFallbackSeatStates() {
@@ -83,6 +90,34 @@ class _BookingFlowScreenState extends ConsumerState<BookingScreen> {
     return rem == 0 ? '${hours}h' : '${hours}h ${rem}m';
   }
 
+  // Slices the full trip's waypoints down to just the segment this
+  // booking covers (fromOrder -> toOrder), converting [lng, lat] into
+  // flutter_map's LatLng(lat, lng).
+  List<LatLng> _segmentRoutePoints(dynamic tripDetail) {
+    if (tripDetail == null) {
+      print('MAP DEBUG: tripDetail is null (not loaded yet, or fetch failed)');
+      return [];
+    }
+
+    final allWaypoints = tripDetail.orderedRoutePoints as List;
+    print('MAP DEBUG: trip has ${allWaypoints.length} total waypoints');
+    for (final w in allWaypoints) {
+      print('MAP DEBUG:   order=${w.order} coords=${w.coordinates} name=${w.name}');
+    }
+    print('MAP DEBUG: looking for order between ${widget.ride.fromOrder} and ${widget.ride.toOrder}');
+
+    final waypoints = allWaypoints
+        .where((w) =>
+            w.order >= widget.ride.fromOrder &&
+            w.order <= widget.ride.toOrder &&
+            w.coordinates.length >= 2)
+        .toList();
+
+    print('MAP DEBUG: ${waypoints.length} waypoints matched the filter');
+
+    return waypoints.map<LatLng>((w) => LatLng(w.lat, w.lng)).toList();
+  }
+
   void _confirmSelection() {
     final ride = widget.ride;
 
@@ -102,6 +137,12 @@ class _BookingFlowScreenState extends ConsumerState<BookingScreen> {
   @override
   Widget build(BuildContext context) {
     final ride = widget.ride;
+    final tripsState = ref.watch(tripsProvider);
+    if (tripsState.tripDetailError != null) {
+      print('MAP DEBUG: fetchTripDetail error: ${tripsState.tripDetailError}');
+    }
+    print('MAP DEBUG: isLoadingTripDetail=${tripsState.isLoadingTripDetail}, ride.id=${widget.ride.id}, fromOrder=${widget.ride.fromOrder}, toOrder=${widget.ride.toOrder}');
+    final routePoints = _segmentRoutePoints(tripsState.tripDetail);
 
     return Scaffold(
       backgroundColor: AppColors.pageBackground,
@@ -115,12 +156,13 @@ class _BookingFlowScreenState extends ConsumerState<BookingScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    MapPlaceholderCard(
+                    RouteMapCard(
                       distanceLabel: ride.distanceKm > 0
                           ? '${ride.distanceKm.toStringAsFixed(1)} km'
                           : '—',
+                      distanceKm: ride.distanceKm,
                       estimatedDriveLabel: _estimatedDrive,
-                      trafficLabel: 'Light',
+                      routePoints: routePoints,
                     ),
                     const SizedBox(height: 16),
                     DriverContactCard(

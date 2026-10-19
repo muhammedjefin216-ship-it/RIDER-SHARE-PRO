@@ -35,6 +35,42 @@ class AuthService {
     }
   }
 
+  // ============================================================
+  // UPDATE PROFILE — matches authController.js -> updateUser
+  // (PUT /auth/users/:id). Uses ApiConstants.updateUser(userId) the
+  // same way seatMap/bookTrip/cancelTrip use their parameterized
+  // endpoints elsewhere in this codebase.
+  // ============================================================
+
+  Future<Response> updateProfile({
+    required String userId,
+    required String name,
+    required String phone,
+    required String gender,
+    required String emergencyContact,
+  }) async {
+    try {
+      final dio = await _dio;
+
+      final response = await dio.put(
+        ApiConstants.updateUser(userId),
+        data: {
+          'name': name,
+          'phone': phone,
+          'gender': gender.toLowerCase(),
+          'emergencyContact': emergencyContact,
+        },
+      );
+
+      return response;
+    } on DioException catch (e) {
+      print('UPDATE PROFILE ERROR');
+      print('STATUS: ${e.response?.statusCode}');
+      print('DATA: ${e.response?.data}');
+      rethrow;
+    }
+  }
+
   Future<Response> verifyEmail({
     required String email,
     required String otp,

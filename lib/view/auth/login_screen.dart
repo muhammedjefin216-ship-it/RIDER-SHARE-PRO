@@ -87,16 +87,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
       print('STEP 2: Google Sign-In initialized');
 
-      final GoogleSignInAccount? account = await googleSignIn.authenticate();
-
-      if (account == null) {
-        print('Google sign-in cancelled by user');
-        return;
-      }
+      final GoogleSignInAccount account = await googleSignIn.authenticate();
 
       print('STEP 3: Google account received: ${account.email}');
 
-      final GoogleSignInAuthentication auth = await account.authentication;
+      final GoogleSignInAuthentication auth = account.authentication;
       final idToken = auth.idToken;
 
       print('STEP 4: ID Token obtained');

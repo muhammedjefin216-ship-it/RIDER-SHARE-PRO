@@ -29,6 +29,8 @@ class ApiConstants {
 
   static const String currentUser = '$baseUrl/auth/me';
 
+  static String updateUser(String userId) => '$baseUrl/auth/users/$userId';
+
   static String seatMap(String tripId) => '$baseUrl/trips/$tripId/seat-map';
 
   static String bookTrip(String tripId) => '$baseUrl/trips/$tripId/book';
@@ -40,4 +42,29 @@ class ApiConstants {
   static String updateTrip(String tripId) => '$baseUrl/trips/$tripId';
 
   static String cancelTrip(String tripId) => '$baseUrl/trips/$tripId/cancel';
+
+
+
+  static const String notifications = '$baseUrl/notifications';
+
+  static String markNotificationRead(String id) =>
+      '$baseUrl/notifications/$id/read';
+
+  static const String markAllNotificationsRead =
+      '$baseUrl/notifications/read-all';
+
+
+  static const String socketUrl = 'https://api.rideshareproapp.com';
+
+  static const String conversations = '$baseUrl/messages';
+
+  static const String unreadMessagesCount = '$baseUrl/messages/unread';
+
+  static String messageHistory(String bookingId) =>
+      '$baseUrl/messages/$bookingId';
+
+  static const String quickReplies = '$baseUrl/quick-replies';
+
+    static String geocodeSearch(String query) =>
+      '$baseUrl/geocode/search?q=${Uri.encodeQueryComponent(query)}';
 }

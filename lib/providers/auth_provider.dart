@@ -283,6 +283,15 @@ class AuthNotifier extends Notifier<AuthState> {
           userName: user['name']?.toString(),
           userEmail: user['email']?.toString(),
           userPhoto: user['profilePhoto']?.toString(),
+          userRating: (user['rating'] as num?)?.toDouble(),
+          userTotalRatings: (user['totalRatings'] as num?)?.toInt(),
+          userPhone: user['phone']?.toString(),
+          userGender: user['gender']?.toString(),
+          userLocation: user['location']?.toString(),
+          userEmergencyContact: user['emergencyContact']?.toString(),
+          userIsVerified: user['isVerified'] as bool?,
+          userIsEmailVerified: user['isEmailVerified'] as bool?,
+          userAuthProvider: user['authProvider']?.toString(),
         );
         return true;
       }
@@ -297,6 +306,58 @@ class AuthNotifier extends Notifier<AuthState> {
       print('FETCH CURRENT USER UNKNOWN ERROR: $e');
       state = state.copyWith(isLoadingUser: false);
       return false;
+    }
+  }
+
+  // ============================================================
+  // UPDATE PROFILE — matches authController.js -> updateUser
+  // (PUT /auth/users/:id). Calls AuthService (which owns the Dio
+  // client), then refreshes local state via fetchCurrentUser() so
+  // every screen watching authProvider updates immediately — same
+  // refresh pattern cancelTrip() uses with fetchMyTrips().
+  // ============================================================
+
+  Future<Map<String, dynamic>> updateProfile({
+    required String name,
+    required String phone,
+    required String gender,
+    required String emergencyContact,
+  }) async {
+    final userId = state.userId;
+    if (userId == null) {
+      return {
+        'success': false,
+        'message': 'No user ID found — try logging in again',
+      };
+    }
+
+    try {
+      final response = await _authService.updateProfile(
+        userId: userId,
+        name: name,
+        phone: phone,
+        gender: gender,
+        emergencyContact: emergencyContact,
+      );
+
+      // Refresh from the server so all screens reading authProvider
+      // pick up the change immediately.
+      await fetchCurrentUser();
+
+      return {
+        'success': true,
+        'message': response.data['message'] ?? 'Profile updated successfully',
+      };
+    } on DioException catch (e) {
+      print('UPDATE PROFILE ERROR: ${e.response?.data}');
+      String message = 'Unable to update profile';
+      if (e.response?.data is Map && e.response!.data['message'] != null) {
+        message = e.response!.data['message'].toString();
+      }
+      return {'success': false, 'message': message};
+    } catch (e) {
+      print('UPDATE PROFILE UNKNOWN ERROR: $e');
+      return {'success': false, 'message': e.toString()};
     }
   }
 
